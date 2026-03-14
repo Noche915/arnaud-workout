@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARNAUD | SALLE FORCE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --bg3: #111111;
+    --border: #1a1a1a;
+    --amber: #FFB800;
+    --amber-dim: #997000;
+    --white: #FFFFFF;
+    --gray: #666666;
+    --gray-light: #999999;
+    --red: #FF4444;
+    --green: #00CC66;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--amber);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.15em;
+  }
+
+  .header-divider {
+    color: var(--gray);
+    font-size: 12px;
+  }
+
+  .header-module {
+    font-size: 11px;
+    color: var(--gray-light);
+    letter-spacing: 0.1em;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--gray-light);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .clock { color: var(--amber); font-weight: 500; }
+
+  /* MAIN */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* SESSION HEADER */
+  .session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .session-title {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .session-date {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+
+  .session-day {
+    font-size: 12px;
+    color: var(--amber);
+    margin-top: 2px;
+  }
+
+  .session-stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-item {
+    font-size: 11px;
+    color: var(--gray-light);
+  }
+
+  .stat-value {
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* TIMER OVERLAY */
+  .timer-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .timer-overlay.active { display: flex; }
+
+  .timer-label {
+    font-size: 12px;
+    color: var(--gray);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .timer-display {
+    font-size: 96px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .timer-display.urgent { color: var(--red); }
+
+  .timer-bar-container {
+    width: 300px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .timer-bar {
+    height: 100%;
+    background: var(--amber);
+    transition: width 1s linear, background 0.3s;
+    width: 100%;
+  }
+
+  .timer-bar.urgent { background: var(--red); }
+
+  .timer-skip {
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--gray-light);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .timer-skip:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  .timer-next-info {
+    font-size: 11px;
+    color: var(--gray);
+    text-align: center;
+  }
+
+  /* EXERCISES */
+  .section-label {
+    font-size: 10px;
+    color: var(--amber);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .exercise-block {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    transition: border-color 0.2s;
+  }
+
+  .exercise-block.active-exercise {
+    border-color: var(--amber);
+  }
+
+  .exercise-block.completed {
+    border-color: #1a3a2a;
+    opacity: 0.7;
+  }
+
+  .exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .exercise-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .exercise-meta {
+    font-size: 10px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  .exercise-status {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+  }
+
+  .exercise-status.done { color: var(--green); }
+
+  /* SERIES */
+  .series-container {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .series-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr 80px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .series-label {
+    font-size: 10px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .input-label {
+    font-size: 9px;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .spinner-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    height: 36px;
+  }
+
+  .spinner-btn {
+    width: 32px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--amber);
+    font-size: 16px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .spinner-btn:hover { background: var(--border); }
+  .spinner-btn:active { background: #222; }
+
+  .spinner-value {
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    min-width: 40px;
+  }
+
+  .spinner-unit {
+    font-size: 9px;
+    color: var(--gray);
+    padding-right: 6px;
+  }
+
+  .validate-btn {
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--amber-dim);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    align-self: flex-end;
+  }
+
+  .validate-btn:hover {
+    background: var(--amber);
+    color: var(--bg);
+  }
+
+  .validate-btn.validated {
+    background: #0a2a1a;
+    border-color: var(--green);
+    color: var(--green);
+    cursor: default;
+  }
+
+  /* NOTES */
+  .notes-row {
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .notes-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-light);
+    outline: none;
+    padding: 4px 0;
+  }
+
+  .notes-input::placeholder { color: var(--gray); }
+
+  /* FOOTER */
+  .session-footer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-info {
+    font-size: 11px;
+    color: var(--gray);
+  }
+
+  .finish-btn {
+    padding: 12px 32px;
+    background: var(--amber);
+    border: none;
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .finish-btn:hover { background: #FFD040; }
+  .finish-btn:disabled { background: var(--border); color: var(--gray); cursor: default; }
+
+  /* EXPORT MODAL */
+  .export-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .export-modal.active { display: flex; }
+
+  .export-card {
+    border: 1px solid var(--amber);
+    background: var(--bg2);
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+  }
+
+  .export-title {
+    font-size: 12px;
+    color: var(--amber);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .export-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-size: 12px;
+    color: var(--gray-light);
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .export-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .export-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--amber);
+    background: transparent;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .export-btn:hover { background: var(--amber); color: var(--bg); }
+
+  .export-btn.secondary {
+    border-color: var(--border);
+    color: var(--gray-light);
+  }
+
+  .export-btn.secondary:hover { background: var(--border); color: var(--white); }
+
+  /* PROGRESS BAR */
+  .progress-bar-outer {
+    height: 2px;
+    background: var(--border);
+    margin-bottom: 20px;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--amber);
+    transition: width 0.4s ease;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--bg2);
+    border: 1px solid var(--amber);
+    padding: 12px 20px;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.05em;
+    z-index: 400;
+    transform: translateY(60px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 600px) {
+    .series-row { grid-template-columns: 40px 1fr 1fr 70px; gap: 6px; }
+    .session-date { font-size: 22px; }
+    .timer-display { font-size: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <span class="header-name">ARNAUD</span>
+    <span class="header-divider">|</span>
+    <span class="header-module">SALLE FORCE</span>
+  </div>
+  <div class="header-right">
+    <span><span class="status-dot"></span> ONLINE</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</div>
+
+<!-- TIMER OVERLAY -->
+<div class="timer-overlay" id="timerOverlay">
+  <div class="timer-label">RÉCUPÉRATION</div>
+  <div class="timer-display" id="timerDisplay">2:00</div>
+  <div class="timer-bar-container">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+  <div class="timer-next-info" id="timerNextInfo"></div>
+  <button class="timer-skip" onclick="skipTimer()">PASSER ▶</button>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="export-modal" id="exportModal">
+  <div class="export-card">
+    <div class="export-title">▸ SÉANCE TERMINÉE — EXPORT OBSIDIAN</div>
+    <div class="export-content" id="exportContent"></div>
+    <div class="export-actions">
+      <button class="export-btn" onclick="copyToClipboard()">COPIER</button>
+      <button class="export-btn" onclick="downloadNote()">TÉLÉCHARGER .MD</button>
+      <button class="export-btn secondary" onclick="closeExport()">FERMER</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="main">
+  
+  <!-- SESSION HEADER -->
+  <div class="session-header">
+    <div>
+      <div class="session-title">SÉANCE EN COURS</div>
+      <div class="session-date" id="sessionDate">--</div>
+      <div class="session-day" id="sessionDay">--</div>
+    </div>
+    <div class="session-stats">
+      <div class="stat-item">SÉRIES VALIDÉES <span class="stat-value" id="seriesCount">0/15</span></div>
+      <div class="stat-item">DURÉE <span class="stat-value" id="duration">0:00</span></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar" style="width:0%"></div>
+  </div>
+
+  <div class="section-label">PROGRAMME — 5 EXERCICES — 21 SÉRIES</div>
+
+  <!-- EXERCISES -->
+  <div id="exercisesContainer"></div>
+
+  <!-- FOOTER -->
+  <div class="session-footer">
+    <div class="footer-info" id="footerInfo">0 séries complétées sur 15</div>
+    <button class="finish-btn" id="finishBtn" onclick="finishSession()">TERMINER LA SÉANCE</button>
+  </div>
+
+</div>
+
+<script>
+// ==================== DATA ====================
+const EXERCISES = [
+  {
+    id: 'facepull',
+    name: 'FACE PULL',
+    meta: '4 × 15 reps · 60 sec repos · léger et contrôlé — échauffement épaules',
+    defaultKg: 15,
+    defaultReps: 15,
+    unit: 'kg',
+    stepKg: 2.5,
+    stepReps: 1,
+    minKg: 5,
+    maxKg: 40,
+    minReps: 1,
+    maxReps: 25,
+    isTime: false
+  },
+  {
+    id: 'dips',
+    name: 'DIPS LESTÉS',
+    meta: '5 × 4–6 reps · 3 min repos · charge progressive',
+    defaultKg: 20,
+    defaultReps: 5,
+    unit: 'kg',
+    stepKg: 2.5,
+    stepReps: 1,
+    minKg: 0,
+    maxKg: 100,
+    minReps: 1,
+    maxReps: 20,
+    isTime: false
+  },
+  {
+    id: 'squat',
+    name: 'SQUAT BARRE',
+    meta: '4 × 5–6 reps · 2–3 min repos',
+    defaultKg: 60,
+    defaultReps: 5,
+    unit: 'kg',
+    stepKg: 2.5,
+    stepReps: 1,
+    minKg: 20,
+    maxKg: 200,
+    minReps: 1,
+    maxReps: 20,
+    isTime: false
+  },
+  {
+    id: 'rowing',
+    name: 'ROWING HALTÈRE',
+    meta: '4 × 8–10 reps par côté · 90 sec repos · max 32 kg',
+    defaultKg: 24,
+    defaultReps: 10,
+    unit: 'kg',
+    stepKg: 2,
+    stepReps: 1,
+    minKg: 8,
+    maxKg: 40,
+    minReps: 1,
+    maxReps: 20,
+    isTime: false
+  },
+  {
+    id: 'farmer',
+    name: "FARMER'S HOLD",
+    meta: '4 × 30–45 sec · 90 sec repos · charge max',
+    defaultKg: 32,
+    defaultReps: 40,
+    unit: 'kg',
+    stepKg: 2,
+    stepReps: 5,
+    minKg: 16,
+    maxKg: 80,
+    minReps: 10,
+    maxReps: 90,
+    isTime: true
+  }
+];
+
+const SERIES_COUNT = { facepull: 4, dips: 5, squat: 4, rowing: 4, farmer: 4 };
+const TIMER_DURATION = 120; // 2 minutes
+
+// ==================== STATE ====================
+let state = {
+  startTime: Date.now(),
+  timerActive: false,
+  timerRemaining: TIMER_DURATION,
+  timerInterval: null,
+  timerCallback: null,
+  validated: {},
+  values: {},
+  notes: {}
+};
+
+// Init values
+EXERCISES.forEach(ex => {
+  const count = SERIES_COUNT[ex.id];
+  state.values[ex.id] = [];
+  for (let i = 0; i < count; i++) {
+    state.values[ex.id].push({ kg: ex.defaultKg, reps: ex.defaultReps });
+  }
+  state.validated[ex.id] = new Array(count).fill(false);
+  state.notes[ex.id] = '';
+});
+
+// ==================== RENDER ====================
+function renderExercises() {
+  const container = document.getElementById('exercisesContainer');
+  container.innerHTML = '';
+
+  EXERCISES.forEach((ex, exIdx) => {
+    const count = SERIES_COUNT[ex.id];
+    const validatedCount = state.validated[ex.id].filter(Boolean).length;
+    const allDone = validatedCount === count;
+
+    const block = document.createElement('div');
+    block.className = `exercise-block ${allDone ? 'completed' : ''}`;
+    block.id = `ex-${ex.id}`;
+
+    let seriesHTML = '';
+    for (let i = 0; i < count; i++) {
+      const v = state.values[ex.id][i];
+      const isDone = state.validated[ex.id][i];
+      seriesHTML += `
+        <div class="series-row" id="series-${ex.id}-${i}">
+          <div class="series-label">SÉR. ${i + 1}</div>
+          <div class="input-group">
+            <div class="input-label">POIDS (${ex.unit})</div>
+            <div class="spinner-control">
+              <button class="spinner-btn" onclick="adjust('${ex.id}',${i},'kg',-1)" ${isDone ? 'disabled' : ''}>−</button>
+              <span class="spinner-value" id="val-kg-${ex.id}-${i}">${v.kg}</span>
+              <span class="spinner-unit">${ex.unit}</span>
+              <button class="spinner-btn" onclick="adjust('${ex.id}',${i},'kg',1)" ${isDone ? 'disabled' : ''}>+</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <div class="input-label">${ex.isTime ? 'DURÉE (SEC)' : 'REPS'}</div>
+            <div class="spinner-control">
+              <button class="spinner-btn" onclick="adjust('${ex.id}',${i},'reps',-1)" ${isDone ? 'disabled' : ''}>−</button>
+              <span class="spinner-value" id="val-reps-${ex.id}-${i}">${v.reps}</span>
+              <span class="spinner-unit">${ex.isTime ? 's' : 'x'}</span>
+              <button class="spinner-btn" onclick="adjust('${ex.id}',${i},'reps',1)" ${isDone ? 'disabled' : ''}>+</button>
+            </div>
+          </div>
+          <button class="validate-btn ${isDone ? 'validated' : ''}" 
+                  id="btn-${ex.id}-${i}"
+                  onclick="validateSeries('${ex.id}',${i})"
+                  ${isDone ? 'disabled' : ''}>
+            ${isDone ? '✓ OK' : 'VALIDER'}
+          </button>
+        </div>
+      `;
+    }
+
+    block.innerHTML = `
+      <div class="exercise-header">
+        <div>
+          <div class="exercise-name">${ex.name}</div>
+          <div class="exercise-meta">${ex.meta}</div>
+        </div>
+        <div class="exercise-status ${allDone ? 'done' : ''}">${allDone ? '✓ TERMINÉ' : `${validatedCount}/${count}`}</div>
+      </div>
+      <div class="series-container">${seriesHTML}</div>
+      <div class="notes-row">
+        <input class="notes-input" 
+               placeholder="Notes (sensations, ajustements...)" 
+               value="${state.notes[ex.id]}"
+               oninput="state.notes['${ex.id}']=this.value"
+               id="notes-${ex.id}">
+      </div>
+    `;
+
+    container.appendChild(block);
+  });
+
+  updateProgress();
+}
+
+// ==================== ADJUST ====================
+function adjust(exId, seriesIdx, field, dir) {
+  const ex = EXERCISES.find(e => e.id === exId);
+  const val = state.values[exId][seriesIdx];
+
+  if (field === 'kg') {
+    val.kg = Math.max(ex.minKg, Math.min(ex.maxKg, val.kg + dir * ex.stepKg));
+    // Sync following series
+    for (let i = seriesIdx + 1; i < SERIES_COUNT[exId]; i++) {
+      if (!state.validated[exId][i]) state.values[exId][i].kg = val.kg;
+    }
+  } else {
+    val.reps = Math.max(ex.minReps, Math.min(ex.maxReps, val.reps + dir * ex.stepReps));
+  }
+
+  // Update display
+  document.getElementById(`val-${field}-${exId}-${seriesIdx}`).textContent = field === 'kg' ? val.kg : val.reps;
+
+  // Sync subsequent kg displays
+  if (field === 'kg') {
+    for (let i = seriesIdx + 1; i < SERIES_COUNT[exId]; i++) {
+      if (!state.validated[exId][i]) {
+        document.getElementById(`val-kg-${exId}-${i}`).textContent = val.kg;
+      }
+    }
+  }
+}
+
+// ==================== VALIDATE ====================
+function validateSeries(exId, seriesIdx) {
+  state.validated[exId][seriesIdx] = true;
+
+  const btn = document.getElementById(`btn-${exId}-${seriesIdx}`);
+  btn.textContent = '✓ OK';
+  btn.classList.add('validated');
+  btn.disabled = true;
+
+  // Disable spinners
+  const row = document.getElementById(`series-${exId}-${seriesIdx}`);
+  row.querySelectorAll('.spinner-btn').forEach(b => b.disabled = true);
+
+  // Check if exercise done
+  const count = SERIES_COUNT[exId];
+  const allDone = state.validated[exId].every(Boolean);
+  if (allDone) {
+    document.getElementById(`ex-${exId}`).classList.add('completed');
+  }
+
+  updateProgress();
+
+  // Find next series info
+  const nextInfo = getNextInfo(exId, seriesIdx);
+  startTimer(nextInfo);
+
+  showToast(`Série ${seriesIdx + 1} validée ✓`);
+}
+
+function getNextInfo(exId, seriesIdx) {
+  const count = SERIES_COUNT[exId];
+  const ex = EXERCISES.find(e => e.id === exId);
+
+  if (seriesIdx + 1 < count) {
+    return `PROCHAINE → ${ex.name} · SÉR. ${seriesIdx + 2}`;
+  }
+
+  // Find next exercise
+  const exIdx = EXERCISES.findIndex(e => e.id === exId);
+  for (let i = exIdx + 1; i < EXERCISES.length; i++) {
+    const nextEx = EXERCISES[i];
+    if (!state.validated[nextEx.id].every(Boolean)) {
+      return `PROCHAIN EXERCICE → ${nextEx.name}`;
+    }
+  }
+  return 'DERNIÈRE SÉRIE — SÉANCE BIENTÔT TERMINÉE';
+}
+
+// ==================== TIMER ====================
+function startTimer(nextInfo = '') {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+
+  state.timerRemaining = TIMER_DURATION;
+  state.timerActive = true;
+
+  const overlay = document.getElementById('timerOverlay');
+  const display = document.getElementById('timerDisplay');
+  const bar = document.getElementById('timerBar');
+  const nextInfoEl = document.getElementById('timerNextInfo');
+
+  overlay.classList.add('active');
+  nextInfoEl.textContent = nextInfo;
+
+  updateTimerDisplay();
+
+  state.timerInterval = setInterval(() => {
+    state.timerRemaining--;
+    updateTimerDisplay();
+
+    if (state.timerRemaining <= 0) {
+      clearInterval(state.timerInterval);
+      state.timerActive = false;
+      overlay.classList.remove('active');
+      playBeep();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const remaining = state.timerRemaining;
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const display = document.getElementById('timerDisplay');
+  const bar = document.getElementById('timerBar');
+
+  display.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+  const pct = (remaining / TIMER_DURATION) * 100;
+  bar.style.width = pct + '%';
+
+  const urgent = remaining <= 30;
+  display.classList.toggle('urgent', urgent);
+  bar.classList.toggle('urgent', urgent);
+}
+
+function skipTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerActive = false;
+  document.getElementById('timerOverlay').classList.remove('active');
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+// ==================== PROGRESS ====================
+function updateProgress() {
+  const total = Object.values(SERIES_COUNT).reduce((a, b) => a + b, 0);
+  const done = EXERCISES.reduce((acc, ex) => acc + state.validated[ex.id].filter(Boolean).length, 0);
+  const pct = (done / total) * 100;
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('seriesCount').textContent = `${done}/${total}`;
+  document.getElementById('footerInfo').textContent = `${done} séries complétées sur ${total}`;
+}
+
+// ==================== FINISH ====================
+function finishSession() {
+  const note = generateObsidianNote();
+  document.getElementById('exportContent').textContent = note;
+  document.getElementById('exportModal').classList.add('active');
+}
+
+function generateObsidianNote() {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const elapsed = Math.floor((Date.now() - state.startTime) / 60000);
+
+  let note = `## 💪 SALLE FORCE\n`;
+  note += `Type:: RENFO\n`;
+  note += `Durée:: ${elapsed} min\n\n`;
+  note += `| Exercice | Série 1 | Série 2 | Série 3 | Série 4 | Série 5 |\n`;
+  note += `|---|---|---|---|---|---|\n`;
+
+  EXERCISES.forEach(ex => {
+    const count = SERIES_COUNT[ex.id];
+    let row = `| ${ex.name} |`;
+    for (let i = 0; i < 5; i++) {
+      if (i < count) {
+        const v = state.values[ex.id][i];
+        const unit = ex.isTime ? 's' : 'x';
+        row += ` ${v.kg}kg×${v.reps}${unit} |`;
+      } else {
+        row += ` — |`;
+      }
+    }
+    note += row + '\n';
+  });
+
+  note += '\n';
+  EXERCISES.forEach(ex => {
+    if (state.notes[ex.id]) {
+      note += `*${ex.name}* : ${state.notes[ex.id]}\n`;
+    }
+  });
+
+  return note;
+}
+
+function copyToClipboard() {
+  const content = document.getElementById('exportContent').textContent;
+  navigator.clipboard.writeText(content).then(() => showToast('Copié dans le presse-papiers ✓'));
+}
+
+function downloadNote() {
+  const content = document.getElementById('exportContent').textContent;
+  const date = new Date().toISOString().split('T')[0];
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${date}-salle-force.md`;
+  a.click();
+  showToast('Fichier téléchargé ✓');
+}
+
+function closeExport() {
+  document.getElementById('exportModal').classList.remove('active');
+}
+
+// ==================== TOAST ====================
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ==================== CLOCK & DURATION ====================
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toTimeString().split(' ')[0];
+
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const m = Math.floor(elapsed / 60);
+  const s = elapsed % 60;
+  document.getElementById('duration').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function setDateHeader() {
+  const now = new Date();
+  const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  const months = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC'];
+
+  document.getElementById('sessionDate').textContent =
+    `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('sessionDay').textContent = days[now.getDay()];
+}
+
+// ==================== INIT ====================
+setDateHeader();
+renderExercises();
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
