@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TIME">
+<meta name="theme-color" content="#000000">
+<title>ARNAUD | TIME</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+
+:root {
+  --amber: #FFB800;
+  --bg: #000;
+  --white: #fff;
+  --green: #00CC55;
+  --gray: #333;
+  --font: 'IBM Plex Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--amber);
+  flex-shrink: 0;
+}
+.h-name { font-size: 10px; font-weight: 700; color: var(--amber); letter-spacing: 0.15em; }
+.h-right { font-size: 10px; color: #555; display: flex; align-items: center; gap: 8px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: p 2s infinite; }
+@keyframes p { 0%,100%{opacity:1}50%{opacity:.3} }
+#clock { color: var(--amber); }
+
+/* CIRCLE */
+.circle-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.circle-wrap { position: relative; touch-action: none; cursor: grab; }
+
+svg#dial { display: block; overflow: visible; }
+.dial-track { fill: none; stroke: #111; stroke-width: 20; }
+.dial-progress { fill: none; stroke: var(--amber); stroke-width: 20; stroke-linecap: butt; }
+.tick-line { stroke: #222; }
+.tick-label-text { fill: #444; font-family: 'IBM Plex Mono', monospace; font-size: 9px; }
+
+.center-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.center-mins { font-size: 58px; font-weight: 700; color: var(--white); line-height: 1; letter-spacing: -0.03em; }
+.center-unit { font-size: 11px; color: #555; letter-spacing: 0.15em; margin-top: 2px; }
+.center-cat { font-size: 11px; color: var(--amber); font-weight: 600; letter-spacing: 0.08em; margin-top: 8px; min-height: 16px; }
+
+/* VALIDATE BUTTON */
+.validate-wrap { margin-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+.validate-btn {
+  width: 140px;
+  height: 44px;
+  border: 1px solid var(--amber);
+  background: transparent;
+  color: var(--amber);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.validate-btn:active { background: var(--amber); color: var(--bg); }
+.validate-btn:disabled { border-color: #333; color: #333; cursor: default; }
+
+/* CATEGORIES */
+.cats-zone {
+  flex-shrink: 0;
+  padding: 0 16px 16px;
+  border-top: 1px solid #111;
+}
+
+.cats-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 0 4px;
+  scrollbar-width: none;
+}
+.cats-scroll::-webkit-scrollbar { display: none; }
+
+.cat-chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid #1a1a1a;
+  background: transparent;
+  color: #555;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  position: relative;
+}
+.cat-chip.selected { border-color: var(--amber); color: var(--amber); background: #0a0800; }
+.cat-chip.has-time::after {
+  content: attr(data-time);
+  position: absolute;
+  top: -7px; right: -2px;
+  background: var(--amber);
+  color: var(--bg);
+  font-size: 7px;
+  font-weight: 700;
+  padding: 1px 4px;
+  letter-spacing: 0;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #0a0800;
+  border: 1px solid var(--amber);
+  padding: 10px 20px;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 0.05em;
+  z-index: 999;
+  transition: transform 0.3s;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-name">TIME TRACKER</div>
+  <div class="h-right">
+    <span class="dot"></span>
+    <span id="clock">--:--</span>
+  </div>
+</header>
+
+<div class="circle-zone">
+  <div class="circle-wrap" id="circleWrap">
+    <svg id="dial" viewBox="0 0 280 280" width="270" height="270">
+      <g id="ticks"></g>
+      <circle class="dial-track" cx="140" cy="140" r="108"/>
+      <circle class="dial-progress" id="dialProgress" cx="140" cy="140" r="108"
+        stroke-dasharray="678.6" stroke-dashoffset="678.6"
+        transform="rotate(-90 140 140)"/>
+    </svg>
+    <div class="center-text">
+      <div class="center-mins" id="centerMins">30</div>
+      <div class="center-unit">MIN</div>
+      <div class="center-cat" id="centerCat"></div>
+    </div>
+  </div>
+
+  <div class="validate-wrap">
+    <button class="validate-btn" id="validateBtn" onclick="logTime()" disabled>VALIDER</button>
+  </div>
+</div>
+
+<div class="cats-zone">
+  <div class="cats-scroll" id="catsScroll"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER_URL = 'https://blue-band-f7d7workout-obsidian.arnaudbuch400.workers.dev/';
+const CATS = ['CORAN','ARABIC','BJJ','PODCAST','DEV','MASJID','ISLAMIC FINANCE','BOOK','FINANCE','ISLAM','ANGLAIS','GYM'];
+const R = 108;
+const CIRC = 2 * Math.PI * R;
+
+let selectedMins = 30;
+let selectedCat = null;
+let todayLog = {};
+let sessions = {};
+
+function getDate() { return new Date().toISOString().split('T')[0]; }
+
+function loadToday() {
+  const d = localStorage.getItem(`tl_${getDate()}`);
+  if (d) { const p = JSON.parse(d); todayLog = p.log||{}; sessions = p.ses||{}; }
+}
+
+function saveToday() {
+  localStorage.setItem(`tl_${getDate()}`, JSON.stringify({ log: todayLog, ses: sessions }));
+}
+
+function fmtMins(m) {
+  if (!m) return '';
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m/60), r = m%60;
+  return r ? `${h}h${r}m` : `${h}h`;
+}
+
+// Draw ticks
+function drawTicks() {
+  const g = document.getElementById('ticks');
+  const cx = 140, cy = 140, r = 108;
+  for (let i = 0; i <= 24; i++) {
+    const mins = i * 5;
+    const angle = (mins / 120 * 360 - 90) * Math.PI / 180;
+    const isMajor = mins % 30 === 0;
+    const inner = r - (isMajor ? 10 : 6);
+    const outer = r + (isMajor ? 10 : 6);
+    const x1 = cx + inner * Math.cos(angle);
+    const y1 = cy + inner * Math.sin(angle);
+    const x2 = cx + outer * Math.cos(angle);
+    const y2 = cy + outer * Math.sin(angle);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('stroke', isMajor ? '#333' : '#1a1a1a');
+    line.setAttribute('stroke-width', isMajor ? '1.5' : '1');
+    g.appendChild(line);
+
+    if (isMajor && mins > 0) {
+      const lx = cx + (outer + 12) * Math.cos(angle);
+      const ly = cy + (outer + 12) * Math.sin(angle);
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', lx); t.setAttribute('y', ly);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('class','tick-label-text');
+      t.textContent = mins;
+      g.appendChild(t);
+    }
+  }
+}
+
+function updateDial(mins) {
+  const pct = Math.min(mins / 120, 1);
+  document.getElementById('dialProgress').style.strokeDashoffset = CIRC - CIRC * pct;
+}
+
+// Drag
+let dragging = false;
+const wrap = document.getElementById('circleWrap');
+
+function getAngle(e) {
+  const rect = wrap.getBoundingClientRect();
+  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+  const touch = e.touches ? e.touches[0] : e;
+  let angle = Math.atan2(touch.clientY - cy, touch.clientX - cx) * 180/Math.PI + 90;
+  if (angle < 0) angle += 360;
+  return angle;
+}
+
+function snapMins(angle) {
+  let m = Math.round(angle / 360 * 120);
+  m = Math.round(m / 5) * 5;
+  return Math.max(5, Math.min(120, m || 5));
+}
+
+function onMove(e) {
+  if (!dragging) return;
+  selectedMins = snapMins(getAngle(e));
+  document.getElementById('centerMins').textContent = selectedMins;
+  updateDial(selectedMins);
+}
+
+wrap.addEventListener('touchstart', e => { dragging = true; onMove(e); }, { passive: true });
+wrap.addEventListener('touchmove', onMove, { passive: true });
+wrap.addEventListener('touchend', () => { dragging = false; });
+wrap.addEventListener('mousedown', e => { dragging = true; onMove(e); });
+document.addEventListener('mousemove', onMove);
+document.addEventListener('mouseup', () => { dragging = false; });
+
+// Categories
+function renderCats() {
+  document.getElementById('catsScroll').innerHTML = CATS.map(cat => {
+    const mins = todayLog[cat] || 0;
+    return `<button class="cat-chip ${selectedCat===cat?'selected':''} ${mins>0?'has-time':''}"
+      data-time="${fmtMins(mins)}" onclick="selectCat('${cat}')">${cat}</button>`;
+  }).join('');
+}
+
+function selectCat(cat) {
+  selectedCat = selectedCat === cat ? null : cat;
+  document.getElementById('centerCat').textContent = selectedCat || '';
+  document.getElementById('validateBtn').disabled = !selectedCat;
+  renderCats();
+}
+
+// LOG TIME
+function logTime() {
+  if (!selectedCat || !selectedMins) return;
+  todayLog[selectedCat] = (todayLog[selectedCat] || 0) + selectedMins;
+  sessions[selectedCat] = (sessions[selectedCat] || 0) + 1;
+  saveToday();
+  pushToObsidian();
+  showToast(`✓ +${selectedMins}mn ${selectedCat}`);
+  renderCats();
+}
+
+async function pushToObsidian() {
+  const date = getDate();
+  let content = `## TIME FOCUS\n\n`;
+  CATS.forEach(cat => { content += `${cat}:: ${todayLog[cat] || 0}\n`; });
+  try {
+    await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, date, filename: `DAILY NOTES/${date}.md`, section: 'TIME_FOCUS' })
+    });
+  } catch(e) {}
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateClock() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+
+loadToday();
+drawTicks();
+updateDial(selectedMins);
+renderCats();
+updateClock();
+setInterval(updateClock, 10000);
+</script>
+</body>
+</html>
