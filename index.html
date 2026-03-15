@@ -1009,13 +1009,10 @@ function generateObsidianNote() {
     const count = SERIES_COUNT[ex.id];
     let row = `| ${ex.name} |`;
     for (let i = 0; i < 5; i++) {
-      if (i < count && state.validated[ex.id][i] === true) {
-        const v = state.values[ex.id][i];
-        const unit = ex.isTime ? 's' : 'x';
-        row += ` ${v.kg}kg×${v.reps}${unit} |`;
-      } else {
-        row += ` — |`;
-      }
+      const cellContent = (i < count && state.validated[ex.id][i] === true)
+        ? `${state.values[ex.id][i].kg}kg×${state.values[ex.id][i].reps}${ex.isTime ? 's' : 'x'}`
+        : '—';
+      row += ` ${cellContent} |`;
     }
     note += row + '\n';
   });
