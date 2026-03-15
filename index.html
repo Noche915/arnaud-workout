@@ -1009,7 +1009,7 @@ function generateObsidianNote() {
     const count = SERIES_COUNT[ex.id];
     let row = `| ${ex.name} |`;
     for (let i = 0; i < 5; i++) {
-      if (i < count) {
+      if (i < count && state.validated[ex.id][i] === true) {
         const v = state.values[ex.id][i];
         const unit = ex.isTime ? 's' : 'x';
         row += ` ${v.kg}kg×${v.reps}${unit} |`;
