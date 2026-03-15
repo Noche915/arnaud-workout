@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HABITS">
+<meta name="theme-color" content="#000000">
+<title>ARNAUD | HABITS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --amber: #FFB800;
+  --bg: #000;
+  --bg2: #080808;
+  --border: #1a1a1a;
+  --white: #fff;
+  --green: #00CC55;
+  --red: #FF3333;
+  --gray: #444;
+  --font: 'IBM Plex Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--amber);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+.h-name { font-size: 10px; font-weight: 700; color: var(--amber); letter-spacing: 0.15em; }
+.h-right { font-size: 10px; color: #555; display: flex; align-items: center; gap: 8px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: p 2s infinite; }
+@keyframes p { 0%,100%{opacity:1}50%{opacity:.3} }
+#clock { color: var(--amber); }
+
+.main { flex: 1; padding: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+/* DATE + SCORE */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.date-block .date-big { font-size: 20px; font-weight: 700; color: var(--white); }
+.date-block .date-sub { font-size: 10px; color: var(--amber); letter-spacing: 0.1em; margin-top: 2px; }
+
+.score-block { text-align: right; }
+.score-num {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  transition: color 0.3s;
+}
+.score-label { font-size: 9px; color: #555; letter-spacing: 0.1em; margin-top: 2px; }
+
+/* PROGRESS BAR */
+.progress-bar {
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 20px;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--amber);
+  transition: width 0.4s ease;
+}
+
+/* SECTION */
+.section-label {
+  font-size: 9px;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* HABIT ROW */
+.habits-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+
+.habit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.habit-row:active { opacity: 0.7; }
+.habit-row.checked { border-color: var(--green); background: #001a0a; }
+
+.habit-check {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  font-size: 13px;
+}
+.habit-row.checked .habit-check {
+  border-color: var(--green);
+  background: var(--green);
+  color: #000;
+}
+
+.habit-info { flex: 1; }
+.habit-name { font-size: 12px; font-weight: 600; color: var(--white); letter-spacing: 0.06em; }
+.habit-desc { font-size: 9px; color: #555; margin-top: 2px; letter-spacing: 0.05em; }
+.habit-row.checked .habit-name { color: var(--green); }
+
+/* SUBMIT */
+.submit-wrap { padding-bottom: 20px; }
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--amber);
+  background: transparent;
+  color: var(--amber);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.submit-btn:active { background: var(--amber); color: var(--bg); }
+.submit-btn.saved { border-color: var(--green); color: var(--green); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #001a0a;
+  border: 1px solid var(--green);
+  padding: 10px 20px;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.05em;
+  z-index: 999;
+  transition: transform 0.3s;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-name">HABITS</div>
+  <div class="h-right">
+    <span class="dot"></span>
+    <span id="clock">--:--</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="top-bar">
+    <div class="date-block">
+      <div class="date-big" id="dateDisplay">--</div>
+      <div class="date-sub" id="dayDisplay">--</div>
+    </div>
+    <div class="score-block">
+      <div class="score-num" id="scoreNum" style="color:#555">0%</div>
+      <div class="score-label">SCORE JOUR</div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="section-label">RITUELS QUOTIDIENS</div>
+  <div class="habits-list" id="habitsList"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="submitBtn" onclick="saveHabits()">
+      SAUVEGARDER DANS OBSIDIAN
+    </button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER_URL = 'https://blue-band-f7d7workout-obsidian.arnaudbuch400.workers.dev/';
+
+const HABITS = [
+  { id: 'pray_on_time',     name: 'PRIÈRE À L\'HEURE',     desc: '5 prières dans les temps' },
+  { id: 'quran_15min',      name: 'CORAN 15 MIN',          desc: 'Lecture ou écoute quotidienne' },
+  { id: 'steps_12000',      name: '12 000 PAS',            desc: 'Objectif marche quotidien' },
+  { id: 'calories_tracking',name: 'CALORIES TRACKÉES',     desc: 'Nutrition enregistrée' },
+  { id: 'protein_150',      name: 'PROTÉINES 150G+',       desc: 'Objectif protéines atteint' },
+  { id: 'dns_intact',       name: 'DNS INTACT',            desc: 'Pas touché au filtre DNS' },
+  { id: 'family_contact',   name: 'CONTACT FAMILLE',       desc: 'Appel ou message famille' },
+  { id: 'supplements',      name: 'SUPPLÉMENTS',           desc: 'Prise quotidienne' },
+  { id: 'soul_check',       name: 'SOUL CHECK',            desc: 'Introspection du jour' },
+];
+
+let checked = {};
+
+function getDate() { return new Date().toISOString().split('T')[0]; }
+
+function loadToday() {
+  const d = localStorage.getItem(`habits_${getDate()}`);
+  if (d) checked = JSON.parse(d);
+}
+
+function saveLocal() {
+  localStorage.setItem(`habits_${getDate()}`, JSON.stringify(checked));
+}
+
+function toggle(id) {
+  checked[id] = !checked[id];
+  saveLocal();
+  renderHabits();
+}
+
+function getScore() {
+  const done = HABITS.filter(h => checked[h.id]).length;
+  return Math.round(done / HABITS.length * 100);
+}
+
+function renderHabits() {
+  const list = document.getElementById('habitsList');
+  list.innerHTML = HABITS.map(h => `
+    <div class="habit-row ${checked[h.id] ? 'checked' : ''}" onclick="toggle('${h.id}')">
+      <div class="habit-check">${checked[h.id] ? '✓' : ''}</div>
+      <div class="habit-info">
+        <div class="habit-name">${h.name}</div>
+        <div class="habit-desc">${h.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const score = getScore();
+  const scoreEl = document.getElementById('scoreNum');
+  scoreEl.textContent = `${score}%`;
+  scoreEl.style.color = score >= 80 ? '#00CC55' : score >= 50 ? '#FFB800' : '#FF3333';
+  document.getElementById('progressFill').style.width = `${score}%`;
+}
+
+async function saveHabits() {
+  const date = getDate();
+  const score = getScore();
+  const done = HABITS.filter(h => checked[h.id]).length;
+
+  let content = `# HABITS — ${date}\n\n`;
+  content += `**Score : ${score}% (${done}/${HABITS.length})**\n\n`;
+  content += `## Rituels\n\n`;
+
+  HABITS.forEach(h => {
+    const status = checked[h.id] ? '✅' : '❌';
+    content += `- ${status} ${h.name}\n`;
+  });
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        content,
+        date,
+        filename: `CONTROL/HABITS/${date}.md`,
+        section: 'HABITS'
+      })
+    });
+
+    if (res.ok) {
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = '✓ SAUVEGARDÉ';
+      btn.classList.add('saved');
+      setTimeout(() => {
+        btn.textContent = 'SAUVEGARDER DANS OBSIDIAN';
+        btn.classList.remove('saved');
+      }, 3000);
+      showToast(`✓ ${done}/${HABITS.length} habits sauvegardées`);
+    } else {
+      showToast('⚠ Erreur de sauvegarde');
+    }
+  } catch(e) {
+    showToast('⚠ Connexion impossible');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function setHeader() {
+  const now = new Date();
+  const days = ['DIMANCHE','LUNDI','MARDI','MERCREDI','JEUDI','VENDREDI','SAMEDI'];
+  const months = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
+  document.getElementById('dateDisplay').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('dayDisplay').textContent = days[now.getDay()];
+}
+
+function updateClock() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+
+loadToday();
+setHeader();
+renderHabits();
+updateClock();
+setInterval(updateClock, 10000);
+</script>
+</body>
+</html>
