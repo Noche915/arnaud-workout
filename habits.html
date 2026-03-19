@@ -15,6 +15,8 @@
 
 :root {
   --amber: #FFB800;
+  --amber-dim: rgba(255,184,0,0.10);
+  --amber-border: rgba(255,184,0,0.28);
   --bg: #000;
   --bg2: #080808;
   --border: #1a1a1a;
@@ -25,165 +27,149 @@
   --font: 'IBM Plex Mono', monospace;
 }
 
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: var(--font);
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
+body { background:var(--bg); color:var(--white); font-family:var(--font); min-height:100dvh; display:flex; flex-direction:column; }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--amber);
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  background: var(--bg);
-  z-index: 10;
-}
-.h-name { font-size: 10px; font-weight: 700; color: var(--amber); letter-spacing: 0.15em; }
-.h-right { font-size: 10px; color: #555; display: flex; align-items: center; gap: 8px; }
-.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: p 2s infinite; }
+header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; border-bottom:1px solid var(--amber); flex-shrink:0; position:sticky; top:0; background:var(--bg); z-index:10; }
+.h-name { font-size:10px; font-weight:700; color:var(--amber); letter-spacing:0.15em; }
+.h-right { font-size:10px; color:#555; display:flex; align-items:center; gap:8px; }
+.dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:p 2s infinite; }
 @keyframes p { 0%,100%{opacity:1}50%{opacity:.3} }
-#clock { color: var(--amber); }
+#clock { color:var(--amber); }
 
-.main { flex: 1; padding: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
+.main { flex:1; padding:16px; max-width:480px; margin:0 auto; width:100%; }
 
-/* DATE + SCORE */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-}
-.date-block .date-big { font-size: 20px; font-weight: 700; color: var(--white); }
-.date-block .date-sub { font-size: 10px; color: var(--amber); letter-spacing: 0.1em; margin-top: 2px; }
+/* TOP BAR */
+.top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+.date-block .date-big { font-size:20px; font-weight:700; color:var(--white); }
+.date-block .date-sub { font-size:10px; color:var(--amber); letter-spacing:0.1em; margin-top:2px; }
+.score-block { text-align:right; }
+.score-num { font-size:36px; font-weight:700; line-height:1; transition:color 0.3s; }
+.score-label { font-size:9px; color:#555; letter-spacing:0.1em; margin-top:2px; }
 
-.score-block { text-align: right; }
-.score-num {
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1;
-  transition: color 0.3s;
-}
-.score-label { font-size: 9px; color: #555; letter-spacing: 0.1em; margin-top: 2px; }
+/* BARS */
+.progress-bar { height:2px; background:var(--border); margin-bottom:6px; }
+.progress-fill { height:100%; background:var(--amber); transition:width 0.4s ease; }
+.xp-block { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.xp-label { font-size:9px; color:#555; letter-spacing:0.1em; }
+.xp-num { font-size:13px; font-weight:700; color:var(--amber); }
+.progress-bar-xp { height:2px; background:var(--border); margin-bottom:20px; }
+.progress-fill-xp { height:100%; background:var(--amber); opacity:0.55; transition:width 0.4s ease; }
 
-/* PROGRESS BAR */
-.progress-bar {
-  height: 2px;
-  background: var(--border);
-  margin-bottom: 20px;
-  position: relative;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--amber);
-  transition: width 0.4s ease;
-}
-
-/* SECTION */
-.section-label {
-  font-size: 9px;
-  color: var(--amber);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* SECTION LABEL */
+.section-label { font-size:9px; color:var(--amber); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
 .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
-/* HABIT ROW */
-.habits-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+/* HABIT ROW (classique) */
+.habits-list { display:flex; flex-direction:column; gap:6px; margin-bottom:24px; }
+.habit-row { display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--border); background:var(--bg2); cursor:pointer; transition:all 0.15s; }
+.habit-row:active { opacity:0.7; }
+.habit-row.checked { border-color:var(--amber); background:#0a0800; }
+.habit-check { width:22px; height:22px; border:1px solid var(--gray); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; font-size:13px; }
+.habit-row.checked .habit-check { border-color:var(--amber); background:var(--amber); color:#000; }
+.habit-info { flex:1; }
+.habit-name { font-size:12px; font-weight:600; color:var(--white); letter-spacing:0.06em; }
+.habit-desc { font-size:9px; color:#555; margin-top:2px; letter-spacing:0.05em; }
+.habit-row.checked .habit-name { color:var(--amber); }
 
-.habit-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 14px;
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  cursor: pointer;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.habit-row:active { opacity: 0.7; }
-.habit-row.checked { border-color: var(--green); background: #001a0a; }
+/* DEEN HEADER */
+.deen-header-block { background:var(--amber-dim); border:1px solid var(--amber-border); border-left:2px solid var(--amber); padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+.deen-header-title { font-size:9px; font-weight:700; letter-spacing:0.15em; color:var(--amber); }
+.deen-xp-display { font-size:13px; font-weight:700; color:var(--amber); }
 
-.habit-check {
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--gray);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s;
-  font-size: 13px;
-}
-.habit-row.checked .habit-check {
-  border-color: var(--green);
-  background: var(--green);
-  color: #000;
-}
+/* DEEN ROW */
+.deen-list { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+.deen-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); background:var(--bg2); cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
+.deen-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--amber); opacity:0.25; transition:opacity 0.15s; }
+.deen-row:hover::before { opacity:0.8; }
+.deen-row:active { opacity:0.7; }
+.deen-row.done-partial { border-color:rgba(255,184,0,0.35); background:#0a0800; }
+.deen-row.done-partial .deen-row-name { color:var(--amber); }
+.deen-row.done-full { border-color:rgba(255,184,0,0.6); background:#0d0a00; }
+.deen-row.done-full .deen-row-name { color:var(--amber); opacity:0.55; text-decoration:line-through; }
+.deen-row-check { width:22px; height:22px; border:1px solid var(--gray); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px; font-weight:700; transition:all 0.15s; }
+.deen-row.done-partial .deen-row-check { border-color:var(--amber); background:var(--amber); color:#000; }
+.deen-row.done-full .deen-row-check { border-color:var(--amber); background:transparent; color:var(--amber); font-size:9px; }
+.deen-row-info { flex:1; min-width:0; }
+.deen-row-name { font-size:12px; font-weight:600; color:var(--white); letter-spacing:0.06em; }
+.deen-row-desc { font-size:9px; color:#555; margin-top:2px; letter-spacing:0.05em; }
+.deen-row-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+.deen-xp-badge { font-size:10px; font-weight:700; color:var(--amber); opacity:0.65; white-space:nowrap; }
+.session-dots { display:flex; gap:3px; }
+.session-dot { width:5px; height:5px; border:1px solid #333; transition:all 0.2s; }
+.session-dot.filled { background:var(--amber); border-color:var(--amber); }
 
-.habit-info { flex: 1; }
-.habit-name { font-size: 12px; font-weight: 600; color: var(--white); letter-spacing: 0.06em; }
-.habit-desc { font-size: 9px; color: #555; margin-top: 2px; letter-spacing: 0.05em; }
-.habit-row.checked .habit-name { color: var(--green); }
+/* DEEN TOTAL */
+.deen-total-row { display:flex; justify-content:space-between; align-items:center; padding:8px 14px; border:1px solid var(--amber-border); background:var(--amber-dim); margin-bottom:24px; }
+.deen-total-label { font-size:9px; color:#888; letter-spacing:0.1em; }
+.deen-total-val { font-size:13px; font-weight:700; color:var(--amber); }
 
 /* SUBMIT */
-.submit-wrap { padding-bottom: 20px; }
-.submit-btn {
-  width: 100%;
-  height: 48px;
-  border: 1px solid var(--amber);
-  background: transparent;
-  color: var(--amber);
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.submit-btn:active { background: var(--amber); color: var(--bg); }
-.submit-btn.saved { border-color: var(--green); color: var(--green); }
+.submit-wrap { padding-bottom:32px; }
+.submit-btn { width:100%; height:48px; border:1px solid var(--amber); background:transparent; color:var(--amber); font-family:var(--font); font-size:12px; font-weight:700; letter-spacing:0.15em; cursor:pointer; transition:all 0.15s; }
+.submit-btn:active { background:var(--amber); color:#000; }
+.submit-btn.saved { opacity:0.5; }
 
 /* TOAST */
-.toast {
-  position: fixed;
-  bottom: 16px; left: 50%;
-  transform: translateX(-50%) translateY(60px);
-  background: #001a0a;
-  border: 1px solid var(--green);
-  padding: 10px 20px;
-  font-size: 10px;
-  color: var(--green);
-  letter-spacing: 0.05em;
-  z-index: 999;
-  transition: transform 0.3s;
-  white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
+.toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%) translateY(60px); background:#0a0800; border:1px solid var(--amber); padding:10px 20px; font-size:10px; color:var(--amber); letter-spacing:0.05em; z-index:999; transition:transform 0.3s; white-space:nowrap; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* MUSLIM DAY */
+.muslim-day-row { display:flex; align-items:center; gap:12px; padding:16px 14px; border:1px solid var(--border); background:var(--bg2); margin-bottom:16px; transition:all 0.4s; }
+.muslim-day-row.unlocked { border-color:var(--amber); background:#0a0800; box-shadow:0 0 0 1px rgba(255,184,0,0.15); }
+.muslim-day-check { width:22px; height:22px; border:1px solid var(--gray); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:13px; font-weight:700; transition:all 0.3s; color:transparent; }
+.muslim-day-row.unlocked .muslim-day-check { border-color:var(--amber); background:var(--amber); color:#000; }
+.muslim-day-info { flex:1; }
+.muslim-day-name { font-size:12px; font-weight:700; color:#444; letter-spacing:0.1em; transition:color 0.3s; }
+.muslim-day-row.unlocked .muslim-day-name { color:var(--amber); }
+.muslim-day-desc { font-size:9px; color:#333; margin-top:2px; letter-spacing:0.05em; transition:color 0.3s; }
+.muslim-day-row.unlocked .muslim-day-desc { color:#888; }
+.muslim-day-xp { font-size:16px; font-weight:700; color:#333; transition:all 0.3s; letter-spacing:0.05em; }
+.muslim-day-row.unlocked .muslim-day-xp { color:var(--amber); }
+
+/* ═══════════════════════════════════════
+   OVERLAY CAROUSEL
+═══════════════════════════════════════ */
+.deen-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97); z-index:1000; flex-direction:column; align-items:center; justify-content:center; padding:16px; }
+.deen-overlay.open { display:flex; }
+.deen-modal { width:100%; max-width:480px; background:var(--bg); border:1px solid var(--amber-border); border-top:2px solid var(--amber); display:flex; flex-direction:column; max-height:90vh; }
+.modal-hdr { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.modal-title { font-size:10px; font-weight:700; letter-spacing:0.15em; color:var(--amber); }
+.modal-meta { display:flex; gap:10px; align-items:center; }
+.modal-counter { font-size:9px; color:#555; letter-spacing:0.1em; }
+.modal-close { background:none; border:1px solid #333; color:#555; font-family:var(--font); font-size:12px; cursor:pointer; padding:2px 8px; transition:all 0.15s; }
+.modal-close:hover { border-color:var(--amber); color:var(--amber); }
+.session-bar { display:flex; gap:6px; align-items:center; padding:7px 16px; border-bottom:1px solid var(--border); flex-shrink:0; flex-wrap:wrap; }
+.session-bar-label { font-size:8px; color:#555; letter-spacing:0.1em; margin-right:2px; }
+.session-pip { width:7px; height:7px; border:1px solid #333; transition:all 0.15s; }
+.session-pip.done { background:var(--amber); border-color:var(--amber); }
+.session-name { font-size:8px; letter-spacing:0.08em; margin-right:6px; }
+.modal-body { flex:1; overflow-y:auto; padding:20px 16px 16px; display:flex; flex-direction:column; gap:16px; }
+.arabic-text { font-size:clamp(22px,6vw,38px); text-align:center; line-height:2; color:var(--white); direction:rtl; unicode-bidi:embed; padding:8px 0; border-bottom:1px solid var(--border); }
+.phonetic-text { font-size:11px; color:#777; text-align:center; font-style:italic; line-height:1.8; }
+.traduction-text { font-size:11px; color:#666; text-align:center; line-height:1.8; border-top:1px solid var(--border); padding-top:12px; }
+.traduction-text strong { color:#999; }
+.contexte-block { background:var(--amber-dim); border:1px solid var(--amber-border); border-left:2px solid var(--amber); padding:10px 14px; }
+.contexte-label { font-size:8px; font-weight:700; letter-spacing:0.2em; color:var(--amber); margin-bottom:6px; text-transform:uppercase; }
+.contexte-text { font-size:10px; color:#777; line-height:1.7; }
+.contexte-text em { color:var(--amber); font-style:normal; }
+.modal-ftr { border-top:1px solid var(--border); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:none; border:1px solid #333; color:#555; font-family:var(--font); font-size:10px; font-weight:700; letter-spacing:0.1em; padding:8px 14px; cursor:pointer; transition:all 0.15s; }
+.nav-btn:hover:not(:disabled) { border-color:var(--amber); color:var(--amber); }
+.nav-btn:disabled { opacity:0.2; cursor:not-allowed; }
+.dot-track { display:flex; gap:5px; align-items:center; }
+.dot-pip { width:5px; height:5px; border:1px solid #333; transition:all 0.2s; }
+.dot-pip.active { background:var(--amber); border-color:var(--amber); }
+.validate-btn { display:none; background:var(--amber); color:#000; border:none; font-family:var(--font); font-size:9px; font-weight:700; letter-spacing:0.15em; padding:10px 16px; cursor:pointer; text-transform:uppercase; transition:opacity 0.15s; }
+.validate-btn:active { opacity:0.8; }
+.validate-btn.visible { display:block; }
+.validate-btn.maxed { background:#222; color:#555; cursor:default; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-name">HABITS</div>
-  <div class="h-right">
-    <span class="dot"></span>
-    <span id="clock">--:--</span>
-  </div>
+  <div class="h-name">HABITS · DEEN</div>
+  <div class="h-right"><span class="dot"></span><span id="clock">--:--</span></div>
 </header>
 
 <div class="main">
@@ -199,19 +185,68 @@ header {
     </div>
   </div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="xp-block">
+    <span class="xp-label">DEEN XP</span>
+    <span class="xp-num" id="xpDisplay">0 / 500</span>
   </div>
+  <div class="progress-bar-xp"><div class="progress-fill-xp" id="xpFill" style="width:0%"></div></div>
 
   <div class="section-label">RITUELS QUOTIDIENS</div>
   <div class="habits-list" id="habitsList"></div>
 
-  <div class="submit-wrap">
-    <button class="submit-btn" id="submitBtn" onclick="saveHabits()">
-      SAUVEGARDER DANS OBSIDIAN
-    </button>
+  <div class="deen-header-block">
+    <span class="deen-header-title">&#9670; DEEN MODULE &mdash; IB&#256;D&#256;T</span>
+    <span class="deen-xp-display" id="deenXpHeader">0 XP</span>
   </div>
 
+  <div class="section-label">INVOCATIONS &amp; LECTURE</div>
+  <div class="deen-list" id="deenList1"></div>
+
+  <div class="section-label">ACTES &amp; AUM&#212;NE</div>
+  <div class="deen-list" id="deenList2"></div>
+
+  <div class="deen-total-row">
+    <span class="deen-total-label">TOTAL DEEN XP &mdash; SESSION</span>
+    <span class="deen-total-val" id="deenTotalVal">0 / 500 XP</span>
+  </div>
+
+  <!-- MUSLIM DAY -->
+  <div class="muslim-day-row" id="muslimDayRow">
+    <div class="muslim-day-check" id="muslimDayCheck"></div>
+    <div class="muslim-day-info">
+      <div class="muslim-day-name" id="muslimDayName">MUSLIM DAY</div>
+      <div class="muslim-day-desc" id="muslimDayDesc">Atteins 500 XP pour déverrouiller</div>
+    </div>
+    <div class="muslim-day-xp" id="muslimDayXp">0 XP</div>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="submitBtn" onclick="saveHabits()">SAUVEGARDER DANS OBSIDIAN</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="deen-overlay" id="deenOverlay">
+  <div class="deen-modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="modalTitle">—</span>
+      <div class="modal-meta">
+        <span class="modal-counter" id="modalCounter">1/1</span>
+        <button class="modal-close" onclick="closeOverlay()">&#10005;</button>
+      </div>
+    </div>
+    <div class="session-bar" id="sessionBar"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-ftr">
+      <button class="nav-btn" id="btnPrev" onclick="prevCard()" disabled>&#9664; PR&#201;C.</button>
+      <div class="dot-track" id="dotTrack"></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="validate-btn" id="btnValidate" onclick="validateAct()">&#10003; VALIDER</button>
+        <button class="nav-btn" id="btnNext" onclick="nextCard()">SUIV. &#9654;</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -219,106 +254,479 @@ header {
 <script>
 const WORKER_URL = 'https://blue-band-f7d7workout-obsidian.arnaudbuch400.workers.dev/';
 
+/* ─── HABITS CLASSIQUES ─── */
 const HABITS = [
-  { id: 'pray_on_time',     name: 'PRIÈRE À L\'HEURE',     desc: '5 prières dans les temps' },
-  { id: 'quran_15min',      name: 'CORAN 15 MIN',          desc: 'Lecture ou écoute quotidienne' },
-  { id: 'steps_12000',      name: '12 000 PAS',            desc: 'Objectif marche quotidien' },
-  { id: 'calories_tracking',name: 'CALORIES TRACKÉES',     desc: 'Nutrition enregistrée' },
-  { id: 'protein_150',      name: 'PROTÉINES 150G+',       desc: 'Objectif protéines atteint' },
-  { id: 'dns_intact',       name: 'DNS INTACT',            desc: 'Pas touché au filtre DNS' },
-  { id: 'family_contact',   name: 'CONTACT FAMILLE',       desc: 'Appel ou message famille' },
-  { id: 'supplements',      name: 'SUPPLÉMENTS',           desc: 'Prise quotidienne' },
-  { id: 'soul_check',       name: 'SOUL CHECK',            desc: 'Introspection du jour' },
-  { id: 'cou_scapula',        name: 'COU + SCAPULA',            desc: 'Exercices cou et scapula 15min' },
-  { id: 'magnesium_glycinate', name: 'MAGNÉSIUM GLYCINATE',     desc: 'Prise avant sommeil' },
+  { id: 'pray_on_time',        name: "PRIÈRE À L'HEURE",    desc: '5 prières dans les temps' },
+  { id: 'quran_15min',         name: 'CORAN 15 MIN',         desc: 'Lecture ou écoute quotidienne' },
+  { id: 'steps_12000',         name: '12 000 PAS',           desc: 'Objectif marche quotidien' },
+  { id: 'calories_tracking',   name: 'CALORIES TRACKÉES',    desc: 'Nutrition enregistrée' },
+  { id: 'protein_150',         name: 'PROTÉINES 150G+',      desc: 'Objectif protéines atteint' },
+  { id: 'dns_intact',          name: 'DNS INTACT',           desc: 'Pas touché au filtre DNS' },
+  { id: 'family_contact',      name: 'CONTACT FAMILLE',      desc: 'Appel ou message famille' },
+  { id: 'supplements',         name: 'SUPPLÉMENTS',          desc: 'Prise quotidienne' },
+  { id: 'soul_check',          name: 'SOUL CHECK',           desc: 'Introspection du jour' },
+  { id: 'cou_scapula',         name: 'COU + SCAPULA',        desc: 'Exercices cou et scapula 15min' },
+  { id: 'magnesium_glycinate', name: 'MAGNÉSIUM GLYCINATE',  desc: 'Prise avant sommeil' },
 ];
 
-let checked = {};
+/* ─── DEEN ITEMS ─── */
+const DEEN = [
+  { id:'adhkars',        name:'ADHKĀRS MATIN & SOIR',    desc:'Sayyid al-Istighfār · Protection · 4 invocations', max:2, labels:['MATIN','SOIR'],                                    xp:100, group:1, key:'adhkars' },
+  { id:'ayat_kursi',     name:'ĀYAT AL-KURSĪ',           desc:'Verset du Trône — matin et soir',                  max:2, labels:['MATIN','SOIR'],                                    xp:40,  group:1, key:'ayat' },
+  { id:'sourates_prot',  name:'PROTECTION 3 SOURATES',   desc:'Al-Ikhlāṣ · Al-Falaq · An-Nās (×3)',              max:1, labels:['FAIT'],                                             xp:100, group:1, key:'sourates' },
+  { id:'dhikr_rapide',   name:'DHIKR RAPIDE',            desc:'Dhikr libre du cœur · matin et soir',             max:2, labels:['MATIN','SOIR'],                                    xp:15,  group:1, key:'dhikr' },
+  { id:'dhikr_salah',    name:'DHIKR POST-ṢALĀH',       desc:'Tasbīḥ 33× · Āyat al-Kursī — après chaque prière',max:5, labels:['FAJR','DHUHR','ʿAṢR','MAGHRIB','ʿISHĀʾ'],        xp:30,  group:1, key:'dhikr_salah' },
+  { id:'ilm',            name:'ILM — APPRENTISSAGE',     desc:'Cours · conférence · lecture islamique 10min',     max:1, labels:['FAIT'],                                             xp:60,  group:1, key:null },
+  { id:'mosquee',        name:'MOSQUÉE — JAMĀCA',        desc:'Prière en congrégation · ×27 la récompense',      max:1, labels:['FAIT'],                                             xp:80,  group:2, key:'mosquee' },
+  { id:'sadaqa',         name:'ṢADAQA DU JOUR',         desc:'Aumône · même symbolique · protège des épreuves', max:1, labels:['FAIT'],                                             xp:60,  group:2, key:'sadaqa' },
+  { id:'tahajjud',       name:'TAHAJJUD',                desc:'Prière de nuit — dernier tiers de la nuit',       max:1, labels:['FAIT'],                                             xp:150, group:2, key:'tahajjud' },
+  { id:'tawbah',         name:'TAWBAH — REPENTIR',       desc:'Istighfār sincère du jour · 3 minutes minimum',   max:1, labels:['FAIT'],                                             xp:50,  group:2, key:'tawbah' },
+];
+
+/* ─── CAROUSEL DATA ─── */
+const CARDS = {
+  adhkars: {
+    label: 'ADHKĀRS MATIN & SOIR',
+    cards: [
+      {
+        ar: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ\nخَلَقْتَنِي وَأَنَا عَبْدُكَ\nوَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ\nأَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ\nأَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي\nفَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+        ph: 'Allāhumma anta Rabbī lā ilāha illā anta, khalaqtanī wa anā ʿabduk, wa anā ʿalā ʿahdika wa waʿdika mā astaṭaʿt, aʿūdhu bika min sharri mā ṣanaʿt, abūʾu laka biniʿmatika ʿalayya wa abūʾu bidhanbī, faghfir lī fa-innahu lā yaghfiru l-dhunūba illā ant.',
+        tr: '<strong>Sayyid al-Istighfār.</strong> Ô Allah, Tu es mon Seigneur. Il n\'y a de dieu que Toi. Tu m\'as créé et je suis Ton serviteur. Je tiens mon engagement et ma promesse envers Toi dans la mesure du possible. Je cherche refuge en Toi contre le mal de ce que j\'ai commis. Je reconnais Tes bienfaits sur moi et je reconnais mes péchés. Pardonne-moi, car nul ne pardonne les péchés excepté Toi.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Celui qui le dit le matin avec certitude et meurt avant le soir entrera au Paradis. Celui qui le dit le soir avec certitude et meurt avant le matin entrera au Paradis."</em> — al-Bukhārī (n°6306).',
+      },
+      {
+        ar: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ\nفِي الْأَرْضِ وَلَا فِي السَّمَاءِ\nوَهُوَ السَّمِيعُ الْعَلِيمُ',
+        ph: 'Bismillāhi l-ladhī lā yaḍurru maʿa-smihi shayʾun fī l-arḍi wa lā fī l-samāʾi wa huwa l-Samīʿu l-ʿAlīm.',
+        tr: 'Au nom d\'Allah, avec Qui rien ne peut causer de tort — ni sur la terre ni dans le ciel — et Il est l\'Audient, l\'Omniscient. <strong>(×3)</strong>',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Quiconque le dit 3 fois le matin et 3 fois le soir, rien ne lui causera de tort."</em> — Abū Dāwūd (n°5088), at-Tirmidhī (n°3388).',
+      },
+      {
+        ar: 'رَضِيتُ بِاللَّهِ رَبًّا\nوَبِالْإِسْلَامِ دِينًا\nوَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا',
+        ph: 'Raḍītu billāhi Rabbā, wa bil-Islāmi dīnā, wa bi-Muḥammadin ṣallallāhu ʿalayhi wa sallama nabiyyā.',
+        tr: 'Je suis satisfait d\'Allah comme Seigneur, de l\'Islam comme religion, et de Muḥammad ﷺ comme Prophète. <strong>(×3)</strong>',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Quiconque le dit 3 fois le matin et le soir, il est un droit sur Allah de le satisfaire le Jour de la Résurrection."</em> — Aḥmad, Abū Dāwūd, Ibn Mājah.',
+      },
+      {
+        ar: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي\nاللَّهُمَّ عَافِنِي فِي سَمْعِي\nاللَّهُمَّ عَافِنِي فِي بَصَرِي\nلَا إِلَهَ إِلَّا أَنْتَ',
+        ph: 'Allāhumma ʿāfinī fī badanī, Allāhumma ʿāfinī fī samʿī, Allāhumma ʿāfinī fī baṣarī, lā ilāha illā ant.',
+        tr: 'Ô Allah, donne la santé à mon corps. Ô Allah, donne la santé à mon ouïe. Ô Allah, donne la santé à ma vue. Il n\'y a de dieu que Toi.',
+        ctx: 'Dhikr du matin et du soir rapporté par Abū Dāwūd (n°5090). Couvre la totalité du bien-être physique et des sens.',
+      },
+    ]
+  },
+
+  ayat: {
+    label: 'ĀYAT AL-KURSĪ',
+    cards: [
+      {
+        ar: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ\nلَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ\nلَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ\nمَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ\nيَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ\nوَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ\nوَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ\nوَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+        ph: 'Allāhu lā ilāha illā Huwa l-Ḥayyu l-Qayyūm. Lā taʾkhudhuhu sinatun wa lā nawm. Lahu mā fī s-samāwāti wa mā fī l-arḍ. Man dhā lladhī yashfaʿu ʿindahu illā bi-idhnih. Yaʿlamu mā bayna aydīhim wa mā khalfahum. Wa lā yuḥīṭūna bi-shayʾin min ʿilmihi illā bi-mā shāʾ. Wasiʿa kursiyyuhu s-samāwāti wa l-arḍ. Wa lā yaʾūduhu ḥifẓuhumā wa Huwa l-ʿAliyyu l-ʿAẓīm.',
+        tr: '<strong>Allah — point de divinité si ce n\'est Lui —</strong> le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il sait ce qui est devant eux et ce qui est derrière eux. Ils n\'embrassent de Sa science que ce qu\'Il veut. Son Trône déborde les cieux et la terre. Leur garde ne Lui pèse pas : Il est le Très Haut, l\'Immense.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Celui qui la récite le soir est protégé des djinns jusqu\'au matin. Celui qui la récite le matin est protégé jusqu\'au soir."</em> — al-Ḥākim, authentifié par al-Albānī. C\'est le plus grand verset du Coran — al-Bukhārī (n°2773).',
+      },
+    ]
+  },
+
+  sourates: {
+    label: 'PROTECTION 3 SOURATES',
+    cards: [
+      {
+        ar: 'قُلْ هُوَ اللَّهُ أَحَدٌ\nاللَّهُ الصَّمَدُ\nلَمْ يَلِدْ وَلَمْ يُولَدْ\nوَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+        ph: 'Qul Huwa Llāhu Aḥad. Allāhu ṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahu kufuwan aḥad.',
+        tr: 'Dis : Il est Allah, Unique. Allah, le Seul à être imploré. Il n\'a pas engendré et n\'a pas été engendré. Et nul n\'est égal à Lui.',
+        ctx: '<em>Sūrat al-Ikhlāṣ</em> — Équivaut au tiers du Coran (Bukhārī). Réciter ces 3 sourates 3× le matin et le soir : <em>"Elles te suffiront contre tout mal."</em> — Abū Dāwūd, at-Tirmidhī.',
+      },
+      {
+        ar: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ\nمِن شَرِّ مَا خَلَقَ\nوَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ\nوَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ\nوَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ',
+        ph: 'Qul aʿūdhu bi-Rabbi l-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri n-naffāthāti fī l-ʿuqad. Wa min sharri ḥāsidin idhā ḥasad.',
+        tr: 'Dis : Je cherche protection auprès du Seigneur de l\'aube — contre le mal de ce qu\'Il a créé, contre l\'obscurité qui s\'étend, contre celles qui soufflent sur les nœuds, contre l\'envieux quand il envie.',
+        ctx: '<em>Sūrat al-Falaq</em> — Protection contre les maux extérieurs : sorcellerie, mauvais œil, envie. — Abū Dāwūd (n°5082).',
+      },
+      {
+        ar: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ\nمَلِكِ النَّاسِ\nإِلَٰهِ النَّاسِ\nمِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ\nالَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ\nمِنَ الْجِنَّةِ وَالنَّاسِ',
+        ph: 'Qul aʿūdhu bi-Rabbi n-nās. Maliki n-nās. Ilāhi n-nās. Min sharri l-waswāsi l-khannās. Alladhī yuwaswisu fī ṣudūri n-nās. Mina l-jinnati wa n-nās.',
+        tr: 'Dis : Je cherche protection auprès du Seigneur des hommes, le Roi des hommes, le Dieu des hommes — contre le mal du tentateur furtif qui souffle le mal dans les poitrines des hommes, qu\'il soit parmi les djinns ou parmi les hommes.',
+        ctx: '<em>Sūrat an-Nās</em> — Protection contre les maux intérieurs : les souffles de Satan sur le cœur. Réciter ×3 le matin et le soir — at-Tirmidhī (ḥasan ṣaḥīḥ).',
+      },
+    ]
+  },
+
+  dhikr: {
+    label: 'DHIKR RAPIDE',
+    cards: [
+      {
+        ar: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
+        ph: 'SubḥānAllāhi wa bi-ḥamdih',
+        tr: 'Gloire à Allah et par Sa louange. À répéter librement, en marchant, en conduisant, en attendant — sans contrainte de nombre.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Deux paroles légères sur la langue, lourdes dans la balance, aimées du Très Miséricordieux : SubḥānAllāhi wa bi-ḥamdih, SubḥānAllāhi l-ʿAẓīm."</em> — al-Bukhārī (n°6682).',
+      },
+      {
+        ar: 'لَا إِلَهَ إِلَّا اللَّهُ\nوَحْدَهُ لَا شَرِيكَ لَهُ\nلَهُ الْمُلْكُ وَلَهُ الْحَمْدُ\nوَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+        ph: 'Lā ilāha illā Llāhu waḥdahu lā sharīka lahu, lahu l-mulku wa lahu l-ḥamdu wa huwa ʿalā kulli shayʾin qadīr.',
+        tr: 'Il n\'y a de divinité qu\'Allah, Seul, sans associé. À Lui la Royauté, à Lui la louange, et Il est Omnipotent.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Celui qui le dit 100× dans la journée a la récompense d\'affranchir 10 esclaves, 100 bonnes actions écrites, 100 mauvaises effacées, et il est protégé de Satan jusqu\'au soir."</em> — al-Bukhārī (n°3293).',
+      },
+      {
+        ar: 'أَسْتَغْفِرُ اللَّهَ\nلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+        ph: 'Astaghfiru Llāh — Lā ḥawla wa lā quwwata illā billāh.',
+        tr: 'Je demande pardon à Allah. — Il n\'y a de force et de puissance qu\'en Allah.',
+        ctx: '<em>Lā ḥawla wa lā quwwata illā billāh</em> est un trésor du Paradis — al-Bukhārī (n°4205). À enchaîner avec l\'istighfār dans les moments creux de la journée.',
+      },
+    ]
+  },
+
+  dhikr_salah: {
+    label: 'DHIKR POST-ṢALĀH',
+    cards: [
+      {
+        ar: 'سُبْحَانَ اللَّهِ ×33\nالْحَمْدُ لِلَّهِ ×33\nاللَّهُ أَكْبَرُ ×33',
+        ph: 'SubḥānAllāh ×33 — Al-Ḥamdu lillāh ×33 — Allāhu Akbar ×33',
+        tr: '<strong>Séquence fixe après la prière.</strong> Gloire à Allah (33 fois) — La louange est à Allah (33 fois) — Allah est le Plus Grand (33 fois). Total : 99 dhikrs rituels.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Quiconque dit SubḥānAllāh 33×, Al-Ḥamdu lillāh 33× et Allāhu Akbar 33× après chaque ṣalāh — ses péchés seront effacés, même s\'ils étaient aussi nombreux que l\'écume de la mer."</em> — Muslim (n°597).',
+      },
+      {
+        ar: 'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',
+        ph: 'Allāhu lā ilāha illā Huwa l-Ḥayyu l-Qayyūm — (Āyat al-Kursī complète)',
+        tr: '<strong>Āyat al-Kursī complète après chaque prière obligatoire.</strong> Allah — point de divinité si ce n\'est Lui — le Vivant, Celui qui subsiste par Lui-même.',
+        ctx: 'Le Prophète ﷺ a dit : <em>"Quiconque récite Āyat al-Kursī après chaque prière obligatoire, rien ne le sépare du Paradis sinon la mort."</em> — an-Nasāʾī, authentifié par al-Albānī.',
+      },
+    ]
+  },
+
+  mosquee: {
+    label: 'MOSQUÉE — JAMĀCA',
+    cards: [
+      {
+        ar: 'صَلَاةُ الْجَمَاعَةِ أَفْضَلُ مِنْ صَلَاةِ الْفَذِّ\nبِسَبْعٍ وَعِشْرِينَ دَرَجَةً',
+        ph: 'Ṣalātu l-jamāʿati afḍalu min ṣalāti l-fadhdhī bi-sabʿin wa ʿishrīna darajah.',
+        tr: 'La prière en congrégation est supérieure à la prière individuelle de vingt-sept degrés.',
+        ctx: 'al-Bukhārī (n°645), Muslim (n°650). Aller à la mosquée pour la prière en congrégation multiplie ta récompense par 27. En Ramadan, chaque pas vers la mosquée est une ṣadaqa.',
+      },
+    ]
+  },
+
+  sadaqa: {
+    label: 'ṢADAQA DU JOUR',
+    cards: [
+      {
+        ar: 'مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ\nوَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا\nوَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ',
+        ph: 'Mā naqaṣat ṣadaqatun min mālin, wa mā zāda Llāhu ʿabdan biʿafwin illā ʿizzā, wa mā tawāḍaʿa aḥadun lillāhi illā rafaʿahu Llāh.',
+        tr: 'La ṣadaqa ne diminue jamais la richesse. Allah n\'augmente jamais un serviteur en pardon sans l\'honorer davantage. Et nul ne s\'humilie devant Allah sans qu\'Allah l\'élève.',
+        ctx: 'Le Prophète ﷺ — Muslim (n°2588). La ṣadaqa protège des épreuves, éteint la colère d\'Allah et guérit les maladies. En Ramadan, sa récompense est multipliée. Même un sourire est une ṣadaqa.',
+      },
+    ]
+  },
+
+  tahajjud: {
+    label: 'TAHAJJUD',
+    cards: [
+      {
+        ar: 'يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ\nإِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الْآخِرُ\nفَيَقُولُ مَنْ يَدْعُونِي فَأَسْتَجِيبَ لَهُ\nمَنْ يَسْأَلُنِي فَأُعْطِيَهُ\nمَنْ يَسْتَغْفِرُنِي فَأَغْفِرَ لَهُ',
+        ph: 'Yanzilu Rabbunā tabāraka wa taʿālā kulla laylatin ilā s-samāʾi d-dunyā, ḥīna yabqā thuluthu l-layli l-ākhiru fa-yaqūlu: man yadʿūnī fa-astajība lah, man yasʾalunī fa-uʿṭiyah, man yastaghfironī fa-aghfira lah.',
+        tr: 'Notre Seigneur descend chaque nuit vers le ciel le plus bas lorsqu\'il reste le dernier tiers de la nuit et dit : Qui M\'invoque pour que Je lui réponde ? Qui Me demande pour que Je lui donne ? Qui Me demande pardon pour que Je lui pardonne ?',
+        ctx: 'al-Bukhārī (n°1145), Muslim (n°758). En Ramadan, le Tahajjud se confond avec le Qiyām al-Layl. C\'est le moment où les invocations sont exaucées. Même 2 rakʿas suffisent.',
+      },
+    ]
+  },
+
+  tawbah: {
+    label: 'TAWBAH — REPENTIR',
+    cards: [
+      {
+        ar: 'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ\nالَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ\nوَأَتُوبُ إِلَيْهِ',
+        ph: 'Astaghfiru Llāha l-ʿAẓīma lladhī lā ilāha illā Huwa l-Ḥayyu l-Qayyūmu wa atūbu ilayh.',
+        tr: 'Je demande pardon à Allah l\'Immense, en dehors duquel il n\'y a pas de divinité, le Vivant, Celui qui subsiste par Lui-même, et je me repens vers Lui.',
+        ctx: 'Le Prophète ﷺ faisait istighfār plus de 70 fois par jour — al-Bukhārī (n°6307). <em>"Heureux celui qui trouve dans sa feuille de comptes beaucoup de demandes de pardon."</em> — Ibn Mājah. La Tawbah efface les péchés comme si on n\'en avait jamais commis.',
+      },
+    ]
+  },
+};
+
+/* ─── STATE ─── */
+let habitsState = {};
+let deenState   = {}; // { id: nbSessions }
 
 function getDate() { return new Date().toISOString().split('T')[0]; }
 
-function loadToday() {
-  const d = localStorage.getItem(`habits_${getDate()}`);
-  if (d) checked = JSON.parse(d);
+function load() {
+  const raw = localStorage.getItem('habits_' + getDate());
+  if (raw) {
+    try {
+      const s = JSON.parse(raw);
+      habitsState = s.habits || {};
+      deenState   = s.deen   || {};
+    } catch(e) {}
+  }
 }
 
-function saveLocal() {
-  localStorage.setItem(`habits_${getDate()}`, JSON.stringify(checked));
+function persist() {
+  localStorage.setItem('habits_' + getDate(), JSON.stringify({ habits: habitsState, deen: deenState }));
 }
 
-function toggle(id) {
-  checked[id] = !checked[id];
-  saveLocal();
+/* ─── HABITS ─── */
+function toggleHabit(id) {
+  habitsState[id] = !habitsState[id];
+  persist();
   renderHabits();
-}
-
-function getScore() {
-  const done = HABITS.filter(h => checked[h.id]).length;
-  return Math.round(done / HABITS.length * 100);
+  updateScore();
 }
 
 function renderHabits() {
-  const list = document.getElementById('habitsList');
-  list.innerHTML = HABITS.map(h => `
-    <div class="habit-row ${checked[h.id] ? 'checked' : ''}" onclick="toggle('${h.id}')">
-      <div class="habit-check">${checked[h.id] ? '✓' : ''}</div>
+  document.getElementById('habitsList').innerHTML = HABITS.map(h => `
+    <div class="habit-row ${habitsState[h.id] ? 'checked' : ''}" onclick="toggleHabit('${h.id}')">
+      <div class="habit-check">${habitsState[h.id] ? '✓' : ''}</div>
       <div class="habit-info">
         <div class="habit-name">${h.name}</div>
         <div class="habit-desc">${h.desc}</div>
       </div>
-    </div>
-  `).join('');
-
-  const score = getScore();
-  const scoreEl = document.getElementById('scoreNum');
-  scoreEl.textContent = `${score}%`;
-  scoreEl.style.color = score >= 80 ? '#00CC55' : score >= 50 ? '#FFB800' : '#FF3333';
-  document.getElementById('progressFill').style.width = `${score}%`;
+    </div>`).join('');
 }
 
+function updateScore() {
+  const done  = HABITS.filter(h => habitsState[h.id]).length;
+  const score = Math.round(done / HABITS.length * 100);
+  const el    = document.getElementById('scoreNum');
+  el.textContent = score + '%';
+  el.style.color = score >= 80 ? 'var(--amber)' : score >= 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('progressFill').style.width = score + '%';
+}
+
+/* ─── DEEN ─── */
+function deenXpTotal() {
+  return DEEN.reduce((s, item) => s + (deenState[item.id] || 0) * item.xp, 0);
+}
+
+function renderDeen() {
+  document.getElementById('deenList1').innerHTML = '';
+  document.getElementById('deenList2').innerHTML = '';
+
+  DEEN.forEach(item => {
+    const sessions = deenState[item.id] || 0;
+    const full     = sessions >= item.max;
+    const partial  = sessions > 0 && !full;
+
+    let stateClass = full ? 'done-full' : partial ? 'done-partial' : '';
+    let checkTxt   = full ? (item.max > 1 ? '✓✓' : '✓') : partial ? '✓' : '';
+
+    let dotsHtml = '';
+    if (item.max > 1) {
+      dotsHtml = '<div class="session-dots">' +
+        Array.from({length: item.max}, (_, i) =>
+          `<div class="session-dot ${i < sessions ? 'filled' : ''}"></div>`
+        ).join('') + '</div>';
+    }
+
+    const xpLabel = item.max > 1
+      ? `+${item.xp} XP ×${item.max}`
+      : `+${item.xp} XP`;
+
+    const html = `
+      <div class="deen-row ${stateClass}" onclick="deenClick('${item.id}')">
+        <div class="deen-row-check">${checkTxt}</div>
+        <div class="deen-row-info">
+          <div class="deen-row-name">${item.name}</div>
+          <div class="deen-row-desc">${item.desc}</div>
+        </div>
+        <div class="deen-row-right">
+          <div class="deen-xp-badge">${xpLabel}</div>
+          ${dotsHtml}
+        </div>
+      </div>`;
+
+    document.getElementById(item.group === 1 ? 'deenList1' : 'deenList2')
+      .insertAdjacentHTML('beforeend', html);
+  });
+
+  const xp = deenXpTotal();
+  document.getElementById('deenXpHeader').textContent  = xp + ' XP';
+  document.getElementById('deenTotalVal').textContent  = xp + ' / 500 XP';
+  document.getElementById('xpDisplay').textContent     = xp + ' / 500';
+  document.getElementById('xpFill').style.width        = Math.min(xp / 5, 100) + '%';
+  updateMuslimDay(xp);
+}
+
+/* ─── MUSLIM DAY ─── */
+function updateMuslimDay(xp) {
+  const row   = document.getElementById('muslimDayRow');
+  const check = document.getElementById('muslimDayCheck');
+  const name  = document.getElementById('muslimDayName');
+  const desc  = document.getElementById('muslimDayDesc');
+  const xpEl  = document.getElementById('muslimDayXp');
+  const unlocked = xp >= 500;
+  row.classList.toggle('unlocked', unlocked);
+  check.textContent   = unlocked ? '✓' : '';
+  name.textContent    = 'MUSLIM DAY';
+  desc.textContent    = unlocked ? 'Objectif atteint \u2014 ' + xp + ' XP DEEN' : 'Atteins 500 XP pour d\u00e9verrouiller \u2014 ' + xp + ' / 500';
+  xpEl.textContent    = xp + ' XP';
+}
+
+/* ─── DEEN CLICK ─── */
+function deenClick(id) {
+  const item     = DEEN.find(i => i.id === id);
+  const sessions = deenState[id] || 0;
+  if (sessions >= item.max) return;
+
+  if (item.key && CARDS[item.key]) {
+    openOverlay(id);
+  } else {
+    // Validation directe (pas de carousel)
+    deenState[id] = sessions + 1;
+    persist();
+    renderDeen();
+    showToast('✓ ' + item.name + ' — ' + (item.labels[sessions] || 'FAIT') + ' (+' + item.xp + ' XP)');
+  }
+}
+
+/* ─── CAROUSEL ─── */
+let activeId  = null;
+let cardIdx   = 0;
+
+function openOverlay(id) {
+  activeId = id;
+  cardIdx  = 0;
+  renderModal();
+  document.getElementById('deenOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay() {
+  document.getElementById('deenOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderModal() {
+  const item     = DEEN.find(i => i.id === activeId);
+  const data     = CARDS[item.key];
+  const cards    = data.cards;
+  const card     = cards[cardIdx];
+  const sessions = deenState[activeId] || 0;
+  const isLast   = cardIdx === cards.length - 1;
+  const maxed    = sessions >= item.max;
+
+  document.getElementById('modalTitle').textContent   = data.label;
+  document.getElementById('modalCounter').textContent = 'CARTE ' + (cardIdx + 1) + '/' + cards.length;
+
+  // Session bar
+  let sb = '<span class="session-bar-label">SESSIONS</span>';
+  for (let i = 0; i < item.max; i++) {
+    sb += `<div class="session-pip ${i < sessions ? 'done' : ''}"></div>`;
+    sb += `<span class="session-name" style="color:${i < sessions ? 'var(--amber)' : '#444'}">${item.labels[i] || (i+1)}</span>`;
+  }
+  document.getElementById('sessionBar').innerHTML = sb;
+
+  // Dots
+  const dt = document.getElementById('dotTrack');
+  dt.innerHTML = '';
+  cards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot-pip' + (i === cardIdx ? ' active' : '');
+    dt.appendChild(d);
+  });
+
+  // Body
+  document.getElementById('modalBody').innerHTML = `
+    <div class="arabic-text">${card.ar.replace(/\n/g, '<br>')}</div>
+    <div class="phonetic-text">${card.ph}</div>
+    <div class="traduction-text">${card.tr}</div>
+    <div class="contexte-block">
+      <div class="contexte-label">&#9670; BIENFAIT &amp; CONTEXTE</div>
+      <div class="contexte-text">${card.ctx}</div>
+    </div>`;
+
+  // Navigation
+  document.getElementById('btnPrev').disabled = cardIdx === 0;
+  document.getElementById('btnNext').style.display = isLast ? 'none' : 'inline-block';
+
+  const vBtn = document.getElementById('btnValidate');
+  if (isLast) {
+    vBtn.classList.add('visible');
+    if (maxed) {
+      vBtn.textContent = '✓ MAX ATTEINT';
+      vBtn.classList.add('maxed');
+      vBtn.onclick = null;
+    } else {
+      const label = item.labels[sessions] || ('SESSION ' + (sessions + 1));
+      vBtn.textContent = '✓ VALIDER — ' + label;
+      vBtn.classList.remove('maxed');
+      vBtn.onclick = validateAct;
+    }
+  } else {
+    vBtn.classList.remove('visible');
+  }
+}
+
+function nextCard() {
+  const item = DEEN.find(i => i.id === activeId);
+  if (cardIdx < CARDS[item.key].cards.length - 1) { cardIdx++; renderModal(); }
+}
+function prevCard() {
+  if (cardIdx > 0) { cardIdx--; renderModal(); }
+}
+
+function validateAct() {
+  const item     = DEEN.find(i => i.id === activeId);
+  const sessions = deenState[activeId] || 0;
+  if (sessions >= item.max) return;
+  deenState[activeId] = sessions + 1;
+  persist();
+  renderDeen();
+  const label = item.labels[sessions] || ('SESSION ' + (sessions + 1));
+  showToast('✓ ' + item.name + ' — ' + label + ' (+' + item.xp + ' XP)');
+  console.log('DEEN_DATA — [X] ' + item.name + ' | SESSION: ' + label + ' | XP: +' + item.xp);
+  closeOverlay();
+}
+
+document.getElementById('deenOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeOverlay();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeOverlay();
+  if (e.key === 'ArrowRight') nextCard();
+  if (e.key === 'ArrowLeft')  prevCard();
+});
+
+/* ─── OBSIDIAN SAVE ─── */
 async function saveHabits() {
-  const date = getDate();
-  const score = getScore();
-  const done = HABITS.filter(h => checked[h.id]).length;
+  const date  = getDate();
+  const done  = HABITS.filter(h => habitsState[h.id]).length;
+  const score = Math.round(done / HABITS.length * 100);
+  const xp    = deenXpTotal();
 
   let content = `# HABITS — ${date}\n\n`;
-  content += `**Score : ${score}% (${done}/${HABITS.length})**\n\n`;
+  content += `**Score : ${score}% (${done}/${HABITS.length})**\n`;
+  content += `**DEEN XP : ${xp} / 500**\n\n`;
   content += `## Rituels\n\n`;
-
-  HABITS.forEach(h => {
-    const status = checked[h.id] ? '✅' : '❌';
-    content += `- ${status} ${h.name}\n`;
+  HABITS.forEach(h => { content += `- ${habitsState[h.id] ? '✅' : '❌'} ${h.name}\n`; });
+  content += `\n## DEEN\n\n`;
+  DEEN.forEach(item => {
+    const s = deenState[item.id] || 0;
+    const sessionInfo = item.max > 1 ? ` (${s}/${item.max})` : '';
+    content += `- ${s > 0 ? '✅' : '❌'} ${item.name}${sessionInfo} | XP: +${s * item.xp}\n`;
   });
+  const muslimDay = xp >= 500;
+  content += `\n## MUSLIM DAY\n\n`;
+  content += `- ${muslimDay ? '✅' : '❌'} MUSLIM DAY — ${xp} / 500 XP DEEN\n`;
+  content += muslimDay ? `- ⭐ Objectif DEEN atteint — journée complète\n` : `- ${500 - xp} XP manquants pour atteindre 500\n`;
+  content += `\nDEEN_DATA — Total XP: ${xp} | Muslim Day: ${muslimDay ? 'OUI' : 'NON'}\n`;
 
   try {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content,
-        date,
-        filename: `CONTROL/HABITS/${date}.md`,
-        section: 'HABITS'
-      })
+      body: JSON.stringify({ content, date, filename: `CONTROL/HABITS/${date}.md`, section: 'HABITS' })
     });
-
     if (res.ok) {
       const btn = document.getElementById('submitBtn');
       btn.textContent = '✓ SAUVEGARDÉ';
       btn.classList.add('saved');
-      setTimeout(() => {
-        btn.textContent = 'SAUVEGARDER DANS OBSIDIAN';
-        btn.classList.remove('saved');
-      }, 3000);
-      showToast(`✓ ${done}/${HABITS.length} habits sauvegardées`);
-    } else {
-      showToast('⚠ Erreur de sauvegarde');
-    }
-  } catch(e) {
-    showToast('⚠ Connexion impossible');
-  }
+      setTimeout(() => { btn.textContent = 'SAUVEGARDER DANS OBSIDIAN'; btn.classList.remove('saved'); }, 3000);
+      const md = xp >= 500 ? ' · ⭐ MUSLIM DAY' : '';
+      showToast('✓ ' + done + '/' + HABITS.length + ' habits · ' + xp + ' XP' + md);
+    } else { showToast('⚠ Erreur de sauvegarde'); }
+  } catch(e) { showToast('⚠ Connexion impossible'); }
 }
 
+/* ─── UI UTILS ─── */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -327,22 +735,25 @@ function showToast(msg) {
 }
 
 function setHeader() {
-  const now = new Date();
-  const days = ['DIMANCHE','LUNDI','MARDI','MERCREDI','JEUDI','VENDREDI','SAMEDI'];
+  const now    = new Date();
+  const days   = ['DIMANCHE','LUNDI','MARDI','MERCREDI','JEUDI','VENDREDI','SAMEDI'];
   const months = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
   document.getElementById('dateDisplay').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.getElementById('dayDisplay').textContent = days[now.getDay()];
+  document.getElementById('dayDisplay').textContent  = days[now.getDay()];
 }
 
 function updateClock() {
   const n = new Date();
   document.getElementById('clock').textContent =
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+    String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
 }
 
-loadToday();
+/* ─── INIT ─── */
+load();
 setHeader();
 renderHabits();
+renderDeen();
+updateScore();
 updateClock();
 setInterval(updateClock, 10000);
 </script>
