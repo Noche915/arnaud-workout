@@ -98,7 +98,7 @@ header { display:flex; justify-content:space-between; align-items:center; paddin
   <div class="section-label">CAPTURE</div>
   <div class="capture-grid">
     <div class="capture-btn" id="btnMenu">
-      <input type="file" accept="image/*" capture="environment" onchange="handleCapture('menu', this)">
+      <input type="file" accept="image/*" onchange="handleCapture('menu', this)">
       <div class="capture-preview" id="previewMenu"></div>
       <div class="capture-overlay">
         <div class="capture-icon">📋</div>
@@ -107,7 +107,7 @@ header { display:flex; justify-content:space-between; align-items:center; paddin
       </div>
     </div>
     <div class="capture-btn required" id="btnPlat">
-      <input type="file" accept="image/*" capture="environment" onchange="handleCapture('plat', this)">
+      <input type="file" accept="image/*" onchange="handleCapture('plat', this)">
       <div class="capture-preview" id="previewPlat"></div>
       <div class="capture-overlay">
         <div class="capture-icon">🍽️</div>
