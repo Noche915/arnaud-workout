@@ -153,6 +153,7 @@ svg#dial { display: block; overflow: visible; }
   position: relative;
 }
 .cat-chip.selected { border-color: var(--amber); color: var(--amber); background: #0a0800; }
+.cat-chip.correcting { border-color: #ff4444; color: #ff4444; background: #0a0000; }
 .cat-chip.has-time::after {
   content: attr(data-time);
   position: absolute;
@@ -239,11 +240,20 @@ let sessions = {};
 let lastEntry = null;
 let pending = false;
 
-function getDate() { return new Date().toISOString().split('T')[0]; }
+function getDate() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 
 function loadToday() {
   const d = localStorage.getItem(`tl_${getDate()}`);
-  if (d) { const p = JSON.parse(d); todayLog = p.log||{}; sessions = p.ses||{}; }
+  if (d) {
+    const p = JSON.parse(d);
+    todayLog = p.log || {};
+    sessions = p.ses || {};
+    Object.keys(todayLog).forEach(k => todayLog[k] = parseInt(todayLog[k]) || 0);
+    Object.keys(sessions).forEach(k => sessions[k] = parseInt(sessions[k]) || 0);
+  }
 }
 
 function saveToday() {
@@ -335,8 +345,34 @@ function renderCats() {
   document.getElementById('catsScroll').innerHTML = CATS.map(cat => {
     const mins = todayLog[cat] || 0;
     return `<button class="cat-chip ${selectedCat===cat?'selected':''} ${mins>0?'has-time':''}"
-      data-time="${fmtMins(mins)}" onclick="selectCat('${cat}')">${cat}</button>`;
+      data-time="${fmtMins(mins)}"
+      onclick="selectCat('${cat}')"
+      oncontextmenu="correctCat(event,'${cat}')"
+      data-longpress="${cat}">${cat}</button>`;
   }).join('');
+  // Long press support
+  document.querySelectorAll('[data-longpress]').forEach(btn => {
+    let t;
+    btn.addEventListener('touchstart', () => { t = setTimeout(() => correctCat(null, btn.dataset.longpress), 600); }, { passive: true });
+    btn.addEventListener('touchend', () => clearTimeout(t), { passive: true });
+    btn.addEventListener('touchmove', () => clearTimeout(t), { passive: true });
+  });
+}
+
+function correctCat(e, cat) {
+  if (e) e.preventDefault();
+  const current = todayLog[cat] || 0;
+  const val = prompt(`Corriger ${cat} (valeur actuelle: ${current}min)\nEntrer la valeur exacte en minutes:`, current);
+  if (val === null) return;
+  const n = parseInt(val);
+  if (isNaN(n) || n < 0) return;
+  if (n === 0) delete todayLog[cat];
+  else todayLog[cat] = n;
+  saveToday();
+  pushToObsidian();
+  showToast(`✓ ${cat} corrigé → ${n}min`);
+  updateTotal();
+  renderCats();
 }
 
 function selectCat(cat) {
@@ -369,8 +405,11 @@ function cancelLog() {
 
 function logTime() {
   if (!selectedCat || !selectedMins) return;
+  const btn = document.getElementById('confirmBtn');
+  if (btn.disabled) return;
+  btn.disabled = true;
   lastEntry = { cat: selectedCat, mins: selectedMins };
-  todayLog[selectedCat] = (todayLog[selectedCat] || 0) + selectedMins;
+  todayLog[selectedCat] = (parseInt(todayLog[selectedCat]) || 0) + selectedMins;
   sessions[selectedCat] = (sessions[selectedCat] || 0) + 1;
   saveToday();
   pushToObsidian();
@@ -379,6 +418,7 @@ function logTime() {
   document.getElementById('validateBtn').style.display = '';
   document.getElementById('confirmRow').classList.remove('show');
   document.getElementById('undoBtn').classList.add('show');
+  document.getElementById('confirmBtn').disabled = false;
   updateTotal();
   renderCats();
 }
