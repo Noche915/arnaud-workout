@@ -7,125 +7,124 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:#06060D;overflow:hidden;font-family:'Outfit',sans-serif;color:#F0F0FF}
-canvas{display:block;position:fixed;inset:0;z-index:1}
+html,body{height:100%;overflow:hidden;background:#06060D;font-family:'Outfit',sans-serif;color:#F0F0FF}
+
+/* LAYOUT */
+.layout{display:flex;height:100vh;width:100vw;position:relative;overflow:hidden}
+.canvas-wrap{flex:1;position:relative;min-width:0}
+canvas{display:block;width:100%;height:100%}
 
 /* HUD top */
 .hud{
-  position:fixed;top:0;left:0;right:0;z-index:10;
+  position:absolute;top:0;left:0;right:0;z-index:10;
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px 22px 0;
-  pointer-events:none;
+  padding:18px 22px 0;pointer-events:none;
 }
 .hud-title{font-size:13px;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.9)}
 .hud-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.1em}
-.hud-hint{
-  font-size:10px;color:rgba(255,255,255,.25);
-  letter-spacing:.08em;text-align:right;
-}
+.hud-hint{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.08em;text-align:right}
 
-/* BOTTOM SHEET */
-.sheet{
-  position:fixed;bottom:0;left:0;right:0;z-index:20;
-  background:#0D0D18;
-  border-top:1px solid rgba(255,255,255,.08);
-  border-radius:20px 20px 0 0;
-  transform:translateY(100%);
-  transition:transform .35s cubic-bezier(.4,0,.2,1);
-  max-height:75vh;
+/* RIGHT PANEL */
+.panel{
+  width:380px;flex-shrink:0;
+  background:#0D0D1A;
+  border-left:1px solid rgba(255,255,255,.07);
   display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  position:relative;z-index:20;
+  overflow:hidden;
 }
-.sheet.open{transform:translateY(0)}
+.panel.open{transform:translateX(0)}
 
-.sheet-handle{
-  width:36px;height:4px;border-radius:2px;
-  background:rgba(255,255,255,.2);
-  margin:12px auto 0;flex-shrink:0;cursor:pointer;
-}
-.sheet-header{
-  padding:16px 20px 14px;flex-shrink:0;
+/* Panel header */
+.panel-header{
+  padding:20px 18px 16px;flex-shrink:0;
   border-bottom:1px solid rgba(255,255,255,.06);
+  position:relative;
 }
-.sheet-cat{font-size:10px;font-weight:700;letter-spacing:.18em;margin-bottom:6px}
-.sheet-name{font-size:26px;font-weight:900;letter-spacing:-.02em;line-height:1}
-.sheet-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:3px}
-.sheet-obj{
-  font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;
-  margin-top:12px;padding:10px 12px;
+.panel-close{
+  position:absolute;top:16px;right:16px;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.5);font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;
+}
+.panel-close:hover{background:rgba(255,255,255,.12);color:#fff}
+.panel-cat{font-size:10px;font-weight:700;letter-spacing:.18em;margin-bottom:6px}
+.panel-name{font-size:24px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.panel-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px}
+.panel-obj{
+  font-size:11px;color:rgba(255,255,255,.55);line-height:1.6;
+  margin-top:12px;padding:9px 11px;
   background:rgba(255,255,255,.04);
-  border-left:3px solid var(--sc);
+  border-left:3px solid var(--pc);
   border-radius:0 8px 8px 0;
 }
-.sheet-scroll{overflow-y:auto;flex:1;padding:0 0 32px}
-.sheet-scroll::-webkit-scrollbar{width:3px}
-.sheet-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* Panel scroll */
+.panel-scroll{overflow-y:auto;flex:1;padding-bottom:32px}
+.panel-scroll::-webkit-scrollbar{width:3px}
+.panel-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
 
 /* Sections */
 .sec{border-bottom:1px solid rgba(255,255,255,.05)}
 .sec-hd{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;cursor:pointer;user-select:none;transition:background .15s;
+  padding:13px 18px;cursor:pointer;user-select:none;transition:background .15s;
 }
 .sec-hd:hover{background:rgba(255,255,255,.03)}
 .sec-hd-l{display:flex;align-items:center;gap:9px}
-.sec-dot{width:7px;height:7px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.sec-dot{width:7px;height:7px;border-radius:50%;background:var(--pc);flex-shrink:0}
 .sec-title{font-size:10px;font-weight:700;letter-spacing:.15em;color:rgba(255,255,255,.4)}
-.sec-count{
-  font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;
-  background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);
-}
+.sec-count{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.35)}
 .sec-chev{color:rgba(255,255,255,.25);font-size:11px;transition:transform .2s}
 .sec-chev.o{transform:rotate(180deg)}
-.sec-body{display:none;padding:0 12px 10px}
+.sec-body{display:none;padding:0 10px 10px}
 .sec-body.o{display:block;animation:fu .18s ease}
-@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* Tech card */
 .tc{
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
-  border-radius:12px;margin-bottom:7px;overflow:hidden;cursor:pointer;
+  border-radius:10px;margin-bottom:6px;overflow:hidden;cursor:pointer;
   transition:border-color .2s;
 }
-.tc:hover{border-color:rgba(255,255,255,.15)}
-.tc.exp{border-color:var(--sc);box-shadow:0 0 20px color-mix(in srgb,var(--sc) 12%,transparent)}
-.tc-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;gap:8px}
-.tc-name{font-size:13px;font-weight:700}
-.tc-key{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.4}
-.tc-tag{
-  font-size:9px;font-weight:700;letter-spacing:.07em;
-  padding:3px 8px;border-radius:7px;flex-shrink:0;white-space:nowrap;
-}
+.tc:hover{border-color:rgba(255,255,255,.14)}
+.tc.exp{border-color:var(--pc);box-shadow:0 0 18px color-mix(in srgb,var(--pc) 10%,transparent)}
+.tc-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;gap:8px}
+.tc-name{font-size:12px;font-weight:700}
+.tc-key{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;line-height:1.4}
+.tc-tag{font-size:9px;font-weight:700;letter-spacing:.07em;padding:3px 7px;border-radius:7px;flex-shrink:0;white-space:nowrap}
 .tag-s{background:rgba(239,68,68,.18);color:#F87171}
 .tag-sw{background:rgba(59,130,246,.18);color:#60A5FA}
 .tag-td{background:rgba(34,197,94,.18);color:#4ADE80}
 .tag-tr{background:rgba(251,191,36,.18);color:#FCD34D}
 .tag-d{background:rgba(168,85,247,.18);color:#C084FC}
-.tc-body{
-  display:none;padding:0 14px 13px;
-  border-top:1px solid rgba(255,255,255,.06);
-}
+.tc-body{display:none;padding:0 13px 12px;border-top:1px solid rgba(255,255,255,.06)}
 .tc-body.o{display:block;animation:fu .15s ease}
 .steps{list-style:none;margin:10px 0 0}
 .steps li{
   display:flex;gap:9px;align-items:flex-start;
-  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);
-  font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;
+  padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:11px;color:rgba(255,255,255,.6);line-height:1.5;
 }
 .steps li:last-child{border-bottom:none}
 .sn{
-  width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:1px;
-  background:color-mix(in srgb,var(--sc) 18%,transparent);
-  color:var(--sc);font-size:9px;font-weight:700;
+  width:18px;height:18px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:color-mix(in srgb,var(--pc) 18%,transparent);
+  color:var(--pc);font-size:9px;font-weight:700;
   display:flex;align-items:center;justify-content:center;
 }
 .drill-b{
-  display:flex;gap:8px;margin-top:10px;padding:9px 11px;border-radius:9px;
-  background:color-mix(in srgb,var(--sc) 7%,transparent);
-  border:1px solid color-mix(in srgb,var(--sc) 20%,transparent);
+  display:flex;gap:8px;margin-top:9px;padding:8px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--pc) 7%,transparent);
+  border:1px solid color-mix(in srgb,var(--pc) 20%,transparent);
 }
-.drill-l{font-size:9px;font-weight:700;letter-spacing:.09em;color:var(--sc);flex-shrink:0;margin-top:1px}
-.drill-t{font-size:12px;color:rgba(255,255,255,.8)}
-.next-r{margin-top:10px}
+.drill-l{font-size:9px;font-weight:700;letter-spacing:.09em;color:var(--pc);flex-shrink:0;margin-top:1px}
+.drill-t{font-size:11px;color:rgba(255,255,255,.8)}
+.next-r{margin-top:9px}
 .next-l{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.2);margin-bottom:5px}
 .next-chips{display:flex;flex-wrap:wrap;gap:5px}
 .nchip{
@@ -133,46 +132,68 @@ canvas{display:block;position:fixed;inset:0;z-index:1}
   border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);
   cursor:pointer;transition:all .15s;
 }
-.nchip:hover{color:var(--sc);border-color:var(--sc)}
+.nchip:hover{color:var(--pc);border-color:var(--pc)}
 
 /* Drills list */
-.drills-ul{list-style:none;padding:6px 14px 4px}
+.drills-ul{list-style:none;padding:6px 13px 4px}
 .drills-ul li{
   display:flex;align-items:center;gap:10px;
-  padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);
-  font-size:12px;color:rgba(255,255,255,.5);
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:11px;color:rgba(255,255,255,.5);
 }
 .drills-ul li:last-child{border-bottom:none}
 
 /* Legend */
 .legend{
-  position:fixed;bottom:20px;right:16px;z-index:10;
-  display:flex;flex-direction:column;gap:5px;
-  pointer-events:none;
+  position:absolute;bottom:20px;right:16px;z-index:10;
+  display:flex;flex-direction:column;gap:5px;pointer-events:none;
 }
 .leg-item{display:flex;align-items:center;gap:7px}
 .leg-dot{width:8px;height:8px;border-radius:50%}
 .leg-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;color:rgba(255,255,255,.3)}
+
+/* Mobile: panel full width overlay */
+@media(max-width:640px){
+  .panel{
+    position:fixed;inset:0;width:100%;
+    border-left:none;border-top:1px solid rgba(255,255,255,.07);
+    border-radius:20px 20px 0 0;
+    top:auto;height:80vh;
+    transform:translateY(100%);
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .panel.open{transform:translateY(0)}
+  .legend{display:none}
+}
 </style>
 </head>
 <body>
 
-<canvas id="c"></canvas>
+<div class="layout">
 
-<div class="hud">
-  <div>
-    <div class="hud-title">BJJ — MON JEU</div>
-    <div class="hud-sub">ARNAUD · A-GAME MAP</div>
+  <!-- CANVAS SIDE -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="c"></canvas>
+
+    <div class="hud">
+      <div>
+        <div class="hud-title">BJJ — MON JEU</div>
+        <div class="hud-sub">ARNAUD · A-GAME MAP</div>
+      </div>
+      <div class="hud-hint" id="hudHint">APPUYER SUR<br>UN NŒUD</div>
+    </div>
+
+    <div class="legend" id="legend"></div>
   </div>
-  <div class="hud-hint">APPUYER SUR<br>UN NŒUD</div>
-</div>
 
-<div class="legend" id="legend"></div>
+  <!-- RIGHT PANEL -->
+  <div class="panel" id="panel">
+    <div class="panel-header" id="panelHeader">
+      <div class="panel-close" onclick="closePanel()">✕</div>
+    </div>
+    <div class="panel-scroll" id="panelBody"></div>
+  </div>
 
-<div class="sheet" id="sheet">
-  <div class="sheet-handle" onclick="closeSheet()"></div>
-  <div class="sheet-header" id="sheetHeader"></div>
-  <div class="sheet-scroll" id="sheetBody"></div>
 </div>
 
 <script>
@@ -384,29 +405,31 @@ const EDGES = [
 // ══════════════════════════════════════════════════════
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-let W, H, DPR, nodes, sheetOpen = false, activeId = null;
-let openSecs = {}, openTechs = {}, currentColor = '#FFB800';
+let W, H, DPR, nodes, panelOpen = false, activeId = null;
+let openSecs = {}, openTechs = {};
 let t0 = Date.now();
 
 function resize() {
   DPR = window.devicePixelRatio || 1;
-  W = window.innerWidth; H = window.innerHeight;
-  canvas.width  = W * DPR; canvas.height = H * DPR;
-  canvas.style.width  = W + 'px'; canvas.style.height = H + 'px';
+  const wrap = document.getElementById('canvasWrap');
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  canvas.width  = W * DPR;
+  canvas.height = H * DPR;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
   ctx.scale(DPR, DPR);
   buildNodes();
 }
 
 function buildNodes() {
-  // Responsive: on small screens shift nodes to use more vertical space
   nodes = POS.map(p => {
     const baseR = p.id === 'back' ? 34 : p.id === 'debout' ? 28 : 24;
     return {
       ...p,
       x: p.nx * W,
-      y: p.ny * H + 50, // offset for HUD
+      y: p.ny * H + 50,
       r: baseR,
-      vx: 0, vy: 0,
       phase: Math.random() * Math.PI * 2
     };
   });
@@ -419,10 +442,8 @@ function draw() {
   const t = (Date.now() - t0) / 1000;
   ctx.clearRect(0, 0, W, H);
 
-  // Background starfield
   drawStars(t);
 
-  // Edges
   EDGES.forEach(e => {
     const a = getNode(e.f), b = getNode(e.t);
     if (!a || !b) return;
@@ -435,9 +456,7 @@ function draw() {
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
     ctx.lineTo(b.x, b.y);
-    ctx.strokeStyle = active
-      ? `rgba(255,255,255,${pulsedAlpha})`
-      : `rgba(100,100,180,${alpha})`;
+    ctx.strokeStyle = active ? `rgba(255,255,255,${pulsedAlpha})` : `rgba(100,100,180,${alpha})`;
     ctx.lineWidth = w;
     if (!active) ctx.setLineDash([4, 8]);
     else ctx.setLineDash([]);
@@ -446,18 +465,15 @@ function draw() {
     ctx.stroke();
     ctx.restore();
 
-    // Arrow head on active
     if (active) drawArrow(a, b);
   });
 
-  // Nodes
   nodes.forEach(n => {
     const breathe = 1 + Math.sin(t * 1.2 + n.phase) * 0.05;
     const r = n.r * breathe;
     const isActive = n.id === activeId;
     const alpha = isActive ? 1 : (activeId ? 0.45 : 1);
 
-    // Outer glow
     const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 2.8);
     grd.addColorStop(0, hexAlpha(n.color, 0.18 * alpha));
     grd.addColorStop(1, hexAlpha(n.color, 0));
@@ -466,7 +482,6 @@ function draw() {
     ctx.fillStyle = grd;
     ctx.fill();
 
-    // Inner circle fill
     const grd2 = ctx.createRadialGradient(n.x - r*0.3, n.y - r*0.3, 0, n.x, n.y, r);
     grd2.addColorStop(0, hexAlpha(n.color, 0.5 * alpha));
     grd2.addColorStop(1, hexAlpha(n.color, 0.15 * alpha));
@@ -475,7 +490,6 @@ function draw() {
     ctx.fillStyle = grd2;
     ctx.fill();
 
-    // Border
     ctx.beginPath();
     ctx.arc(n.x, n.y, r, 0, Math.PI*2);
     ctx.strokeStyle = hexAlpha(n.color, (isActive ? 1 : 0.6) * alpha);
@@ -485,7 +499,6 @@ function draw() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Icon
     ctx.font = `${r * 0.72}px serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -493,7 +506,6 @@ function draw() {
     ctx.fillText(n.icon, n.x, n.y);
     ctx.globalAlpha = 1;
 
-    // Label
     ctx.font = `700 ${Math.min(11, r * 0.38)}px Outfit`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -563,35 +575,56 @@ canvas.addEventListener('pointerdown', e => {
   const x = e.clientX - rect.left, y = e.clientY - rect.top;
   const hit = hitTest(x, y);
   if (hit) openNode(hit);
-  else if (!sheetOpen) { activeId = null; }
+  else if (!panelOpen) { activeId = null; }
 });
 
 // ══════════════════════════════════════════════════════
-// SHEET
+// PANEL
 // ══════════════════════════════════════════════════════
 function openNode(node) {
   activeId = node.id;
-  currentColor = node.color;
   openSecs = {}; openTechs = {};
-  document.getElementById('sheet').style.setProperty('--sc', node.color);
-  buildSheet(node);
-  document.getElementById('sheet').classList.add('open');
-  sheetOpen = true;
+  const panel = document.getElementById('panel');
+  panel.style.setProperty('--pc', node.color);
+  buildPanel(node);
+  panel.classList.add('open');
+  panelOpen = true;
+  // Scroll panel to top
+  document.getElementById('panelBody').scrollTop = 0;
+  // Update HUD hint
+  document.getElementById('hudHint').innerHTML = '';
+  // Trigger canvas resize to account for panel width
+  setTimeout(resize, 310);
 }
 
-function closeSheet() {
-  document.getElementById('sheet').classList.remove('open');
-  sheetOpen = false;
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  panelOpen = false;
   activeId = null;
+  document.getElementById('hudHint').innerHTML = 'APPUYER SUR<br>UN NŒUD';
+  setTimeout(resize, 310);
 }
 
-function buildSheet(pos) {
-  const hdr = document.getElementById('sheetHeader');
+function goTo(nodeId) {
+  const n = nodes.find(x => x.id === nodeId);
+  if (n) {
+    openSecs = {}; openTechs = {};
+    activeId = n.id;
+    const panel = document.getElementById('panel');
+    panel.style.setProperty('--pc', n.color);
+    buildPanel(n);
+    document.getElementById('panelBody').scrollTop = 0;
+  }
+}
+
+function buildPanel(pos) {
+  const hdr = document.getElementById('panelHeader');
   hdr.innerHTML = `
-    <div class="sheet-cat" style="color:${pos.color}">${pos.cat}</div>
-    <div class="sheet-name">${pos.name}</div>
-    <div class="sheet-sub">${pos.sub}</div>
-    <div class="sheet-obj" style="border-color:${pos.color}">${pos.obj}</div>
+    <div class="panel-close" onclick="closePanel()">✕</div>
+    <div class="panel-cat" style="color:${pos.color}">${pos.cat}</div>
+    <div class="panel-name">${pos.name}</div>
+    <div class="panel-sub">${pos.sub}</div>
+    <div class="panel-obj">${pos.obj}</div>
   `;
 
   const groups = [
@@ -626,7 +659,6 @@ function buildSheet(pos) {
     `;
   });
 
-  // Drills
   const dsid = pos.id + '_dr';
   html += `
     <div class="sec">
@@ -639,13 +671,13 @@ function buildSheet(pos) {
       </div>
       <div class="sec-body" id="sec-${dsid}">
         <ul class="drills-ul">
-          ${pos.drills.map(d=>`<li>⚡ ${d.replace('⚡ ','')}</li>`).join('')}
+          ${pos.drills.map(d=>`<li>⚡ ${d}</li>`).join('')}
         </ul>
       </div>
     </div>
   `;
 
-  document.getElementById('sheetBody').innerHTML = html;
+  document.getElementById('panelBody').innerHTML = html;
 }
 
 function buildTechCard(pos, tech) {
@@ -663,7 +695,7 @@ function buildTechCard(pos, tech) {
       <div class="next-chips">
         ${tech.next.map(nid=>{
           const np = POS.find(p=>p.id===nid);
-          return np ? `<div class="nchip" onclick="event.stopPropagation();closeSheet();setTimeout(()=>{const n=nodes.find(x=>x.id==='${np.id}');if(n)openNode(n)},400)">${np.icon} ${np.name}</div>` : '';
+          return np ? `<div class="nchip" onclick="event.stopPropagation();goTo('${np.id}')">${np.icon} ${np.name}</div>` : '';
         }).join('')}
       </div>
     </div>
