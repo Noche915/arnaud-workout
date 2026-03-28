@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BJJ — MON JEU · ARNAUD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #0B0B10;
+  --bg2:    #13131C;
+  --bg3:    #1C1C28;
+  --border: #252535;
+  --text:   #EEEEF8;
+  --dim:    #7070A0;
+  --muted:  #3A3A55;
+
+  --green:  #22C55E;
+  --blue:   #3B82F6;
+  --indigo: #818CF8;
+  --violet: #6366F1;
+  --orange: #F97316;
+  --red:    #EF4444;
+  --gold:   #FFB800;
+  --purple: #A855F7;
+  --slate:  #64748B;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(11,11,16,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.header-title { font-size: 13px; font-weight: 700; letter-spacing: .15em; color: var(--text); }
+.header-sub   { font-size: 11px; color: var(--dim); letter-spacing: .08em; margin-top: 2px; }
+.header-back {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all .2s;
+}
+.header-back:hover { color: var(--text); background: var(--bg3); }
+.header-back.visible { display: flex; }
+.chevron-left { font-size: 16px; }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active {
+  display: block;
+  animation: fadeUp .28s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HOME ── */
+.home-intro {
+  padding: 24px 20px 16px;
+}
+.home-intro h2 { font-size: 22px; font-weight: 800; line-height: 1.2; }
+.home-intro p  { font-size: 13px; color: var(--dim); margin-top: 6px; line-height: 1.55; }
+
+/* Flow strip */
+.flow-strip {
+  padding: 0 20px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.flow-strip::-webkit-scrollbar { display: none; }
+.flow-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+}
+.flow-node {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.flow-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.flow-pill:hover { filter: brightness(1.2); transform: scale(1.04); }
+.flow-arrow { color: var(--muted); font-size: 14px; padding: 0 6px; }
+
+/* Position grid */
+.pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px 32px;
+}
+@media(min-width:640px){ .pos-grid { grid-template-columns: repeat(3,1fr); } }
+@media(min-width:900px){ .pos-grid { grid-template-columns: repeat(4,1fr); } }
+
+.pos-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.pos-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+  background: var(--c);
+}
+.pos-card:hover {
+  border-color: var(--c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.pos-card-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+}
+.pos-card-name { font-size: 13px; font-weight: 700; line-height: 1.2; }
+.pos-card-sub  { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.pos-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.pos-card-cat {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  color: var(--c);
+}
+.pos-card-count {
+  font-size: 11px;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+/* ── POSITION DETAIL ── */
+.pos-detail { padding: 0 0 48px; }
+
+.pos-hero {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.pos-hero::after {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pc) 18%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.pos-hero-cat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--pc);
+  margin-bottom: 8px;
+}
+.pos-hero-name {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.pos-hero-sub {
+  font-size: 14px;
+  color: var(--dim);
+  margin-top: 2px;
+}
+.pos-hero-obj {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--bg2);
+  border-left: 3px solid var(--pc);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Technique sections */
+.tech-section { border-bottom: 1px solid var(--border); }
+.tech-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.tech-section-header:hover { background: var(--bg2); }
+.tech-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tech-section-title .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--pc);
+  flex-shrink: 0;
+}
+.tech-section-count {
+  font-size: 11px;
+  color: var(--dim);
+  background: var(--bg3);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.tech-section-body {
+  display: none;
+  padding: 0 16px 16px;
+}
+.tech-section-body.open { display: block; animation: fadeUp .2s ease; }
+
+/* Technique card */
+.tech-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.tech-card:hover { border-color: color-mix(in srgb, var(--pc) 50%, transparent); }
+.tech-card.expanded { border-color: var(--pc); }
+
+.tech-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+.tech-card-name { font-size: 14px; font-weight: 600; }
+.tech-card-key  { font-size: 11px; color: var(--dim); margin-top: 3px; }
+.tech-card-type {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.type-submission { background: rgba(239,68,68,.15); color: #EF4444; }
+.type-sweep      { background: rgba(59,130,246,.15); color: #3B82F6; }
+.type-takedown   { background: rgba(34,197,94,.15);  color: #22C55E; }
+.type-transition { background: rgba(251,191,36,.15); color: #FBB724; }
+.type-defense    { background: rgba(168,85,247,.15); color: #A855F7; }
+.type-drill-type { background: rgba(100,116,139,.15); color: #94A3B8; }
+
+.tech-card-body {
+  display: none;
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--border);
+}
+.tech-card-body.open { display: block; animation: fadeUp .18s ease; }
+
+.steps-list { list-style: none; margin: 12px 0; }
+.steps-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+.steps-list li:last-child { border-bottom: none; }
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--pc) 20%, transparent);
+  color: var(--pc);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.drill-box {
+  background: color-mix(in srgb, var(--pc) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pc) 25%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--pc);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.drill-box .drill-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--pc);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.drill-box .drill-text { color: var(--text); font-size: 12px; }
+
+.next-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.next-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all .15s;
+}
+.next-chip:hover {
+  border-color: var(--pc);
+  color: var(--pc);
+  background: color-mix(in srgb, var(--pc) 10%, transparent);
+}
+.next-label { font-size: 10px; color: var(--muted); margin-top: 8px; margin-bottom: 4px; letter-spacing: .08em; }
+
+/* Drills section */
+.drills-list { list-style: none; padding: 0 20px 16px; }
+.drills-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--dim);
+}
+.drills-list li:last-child { border-bottom: none; }
+.drills-list .drill-icon { font-size: 16px; }
+
+/* Rule */
+.rule-box {
+  margin: 0 20px;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  font-size: 12px;
+  color: var(--dim);
+  line-height: 1.6;
+  font-style: italic;
+}
+.rule-box strong { color: var(--text); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">BJJ — MON JEU</div>
+    <div class="header-sub" id="headerSub">10 positions · A-game Arnaud</div>
+  </div>
+  <div class="header-back" id="backBtn" onclick="goHome()">
+    <span class="chevron-left">←</span> Positions
+  </div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="view active" id="view-home">
+  <div class="home-intro">
+    <h2>Mon A-Game</h2>
+    <p>Clique sur une position pour voir les techniques, transitions et drills.</p>
+  </div>
+
+  <div class="flow-strip">
+    <div class="flow-inner" id="flowInner"></div>
+  </div>
+
+  <div class="pos-grid" id="posGrid"></div>
+</div>
+
+<!-- ══════════ POSITION DETAIL ══════════ -->
+<div class="view" id="view-position">
+  <div class="pos-detail" id="posDetail"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const POSITIONS = [
+  {
+    id: 'debout',
+    name: 'DEBOUT',
+    sub: 'Standing',
+    icon: '⬆',
+    color: '#22C55E',
+    cat: 'NEUTRE',
+    obj: 'Aller au sol dans une position favorable. Prioriser le guard pull vers SLX — éviter de s\'exposer aux takedowns adverses.',
+    flow: true,
+    techs: [
+      {
+        name: 'Guard Pull → Single Leg X',
+        type: 'transition',
+        key: 'Saisir le pied → s\'asseoir → hooks SLX',
+        steps: [
+          'Grips : manche + col ou double manche',
+          'Avancer → saisir le pied extérieur (bas, près de la cheville)',
+          'S\'asseoir en tirant le pied vers soi et à l\'extérieur',
+          'Pied sur la hanche adverse, pied derrière le genou (creux poplité)',
+          'Rentrer les deux hooks → contrôle SLX établi'
+        ],
+        drill: 'Entrée SLX sur jambe fictive × 20 par côté',
+        next: ['slx']
+      },
+      {
+        name: 'Double Leg Takedown',
+        type: 'takedown',
+        key: 'Penetration step → drive avant → finish',
+        steps: [
+          'Setup : fake jab ou collar tie pour casser la distance',
+          'Penetration step (genou quasi au sol, pied d\'attaque entre les pieds adverses)',
+          'Tête sur la hanche (JAMAIS dans l\'estomac — risque triangle)',
+          'Bras autour des deux jambes, mains verrouillées derrière les genoux',
+          'Drive vers l\'avant ou trip (Inner trip)'
+        ],
+        drill: 'Penetration step × 30 chaque jambe — focus sur la profondeur du step',
+        next: ['side', 'garde_fermee']
+      },
+      {
+        name: 'Single Leg Takedown',
+        type: 'takedown',
+        key: 'Shot bas → saisir genou → élever → finish',
+        steps: [
+          'Shot bas → saisir derrière le genou (pas la cheville)',
+          'Tête à l\'extérieur (outside head position — évite le guillotine)',
+          'Élever la jambe vers la hanche',
+          'Finish option 1 : Run the pipe (pousser le genou)',
+          'Finish option 2 : Inside trip (croc pied intérieur)'
+        ],
+        drill: 'Shot bas × 20 — accent sur l\'outside head',
+        next: ['side', 'garde_fermee']
+      }
+    ],
+    drills: [
+      '⚡ Penetration step × 30 (chaque jambe)',
+      '⚡ Entrée SLX × 20 (chaque côté)',
+      '⚡ Shot bas × 20'
+    ]
+  },
+  {
+    id: 'garde_fermee',
+    name: 'GARDE FERMÉE',
+    sub: 'Closed Guard',
+    icon: '🛡',
+    color: '#3B82F6',
+    cat: 'GARDE',
+    obj: 'Casser la posture adverse avant tout. Sans posture cassée = pas d\'attaque. Objectif prioritaire : triangle ou back take.',
+    flow: true,
+    techs: [
+      {
+        name: 'Triangle',
+        type: 'submission',
+        key: 'Casser posture → angle → verrouiller',
+        steps: [
+          'Casser la posture : pull fort sur la nuque',
+          'Push/pull sur les bras : un bras dedans, un dehors',
+          'Pivoter les hanches à 90° (angle est crucial)',
+          'Passer la jambe derrière la tête → croiser les chevilles',
+          'Ajuster l\'angle (perpendiculaire), couper avec le jarret',
+          'Finition : tirer la tête vers le bas + étendre les hanches'
+        ],
+        drill: 'Pivots de hanche (pour angle triangle) × 30',
+        next: ['back']
+      },
+      {
+        name: 'Guillotine (High Elbow)',
+        type: 'submission',
+        key: 'Contrôle tête → coude haut → rotation',
+        steps: [
+          'Saisir la tête : bras autour du cou (pas serrer encore)',
+          'Monter le coude HAUT (high elbow guillotine)',
+          'Main en supination (paume vers le ciel)',
+          'Fermer les jambes si possible',
+          'Finition : rotation des hanches + étendre le bras vers le plafond',
+          'Depuis shoot défense : attraper avant l\'entrée complète'
+        ],
+        drill: 'Entrée guillotine sur foulard × 20',
+        next: ['garde_fermee']
+      },
+      {
+        name: 'Kimura',
+        type: 'submission',
+        key: 'Poignet → passer bras → rotation épaule',
+        steps: [
+          'Casser la posture → attraper le poignet côté fort',
+          'Main libre passe derrière le coude adverse → figure-4',
+          'Verrouiller le figure-4 (poignet propre sur poignet adverse)',
+          'Rotation : pousser le coude vers l\'arrière / le haut',
+          'Si défense (bras verrouillé) : sweep hip bump ou back take'
+        ],
+        drill: 'Grip figure-4 × 20 (chaque côté)',
+        next: ['back', 'garde_fermee']
+      },
+      {
+        name: 'Armbar depuis garde',
+        type: 'submission',
+        key: 'Contrôle coude → pivot hanche → jambe tête',
+        steps: [
+          'Contrôler le coude adverse des deux mains',
+          'Pivoter les hanches à 90° (même principe que triangle)',
+          'Jambe sur l\'épaule adverse (pas sauter trop vite)',
+          'Serrer les genoux → corps en ligne avec le bras',
+          'Étendre les hanches vers le plafond (pas tirer avec les bras)'
+        ],
+        drill: 'Pivot armbar × 20',
+        next: []
+      },
+      {
+        name: 'Hip Bump Sweep',
+        type: 'sweep',
+        key: 'Ouvrir garde → monter sur les mains → rotation',
+        steps: [
+          'Ouvrir les jambes (ne plus avoir les pieds croisés)',
+          'Monter sur les mains (s\'asseoir)',
+          'Rotation des hanches vers l\'avant-haut',
+          'Emmener l\'adversaire par-dessus',
+          'Finir en mount',
+          'COMBO : si résiste → Kimura immédiat'
+        ],
+        drill: 'Hip bump × 20',
+        next: ['mount']
+      },
+      {
+        name: 'Scissor Sweep',
+        type: 'sweep',
+        key: 'Contrôle manche+col → ciseau → kick',
+        steps: [
+          'Contrôle : saisir la manche + le col (ou épaule)',
+          'Placer le genou sur le ventre adverse, autre jambe tendue derrière le genou adverse',
+          'Ciseau les deux jambes simultanément',
+          'Tirer la manche vers le bas en même temps'
+        ],
+        drill: 'Scissor sweep × 15 chaque côté',
+        next: ['mount']
+      }
+    ],
+    drills: [
+      '⚡ Pivots de hanche (angle triangle/armbar) × 30',
+      '⚡ Hip bump × 20',
+      '⚡ Shrimping × 2 aller-retour (ouverture de garde)'
+    ]
+  },
+  {
+    id: 'slx',
+    name: 'SINGLE LEG X',
+    sub: 'SLX / X-Guard',
+    icon: '✕',
+    color: '#818CF8',
+    cat: 'GARDE',
+    obj: 'Déséquilibrer puis sweeper ou prendre le dos. Position offensive — ne pas rester statique. SLX = contrôle une jambe, X-Guard = deux.',
+    flow: false,
+    techs: [
+      {
+        name: 'Lifting Sweep (X-Guard)',
+        type: 'sweep',
+        key: 'Pied hanche + pied genou → extension → lever',
+        steps: [
+          'Un pied sur la hanche adverse (poussez vers l\'extérieur)',
+          'Autre pied derrière le genou adverse (creux poplité)',
+          'Extension simultanée des deux jambes',
+          'L\'adversaire décolle → se lever rapidement',
+          'Finir debout ou en leg drag directement'
+        ],
+        drill: 'Lifting sweep sur partenaire (ou au mur) × 20',
+        next: ['side', 'debout']
+      },
+      {
+        name: 'Back Take depuis SLX',
+        type: 'transition',
+        key: 'Rotation intérieure → passer derrière → hooks',
+        steps: [
+          'Depuis SLX : pivoter vers l\'intérieur (du côté de la jambe contrôlée)',
+          'Lâcher les hooks jambe → passer les bras autour de la taille',
+          'Se lever derrière l\'adversaire',
+          'Insérer les deux hooks (crochets de pieds)',
+          'Chercher le RNC immédiatement'
+        ],
+        drill: 'Rotation vers le dos depuis SLX × 15',
+        next: ['back']
+      },
+      {
+        name: 'Entrée Ankle Lock (no-gi)',
+        type: 'submission',
+        key: 'Contrôle jambe → rotation corps → pression cheville',
+        steps: [
+          'Saisir la cheville (pas le pied — la cheville)',
+          'Coller l\'avant-bras contre le tendon d\'Achille',
+          'Rotation du corps (rouler sur l\'épaule)',
+          'Serrer fort le coude contre la hanche',
+          'Extension → pression sur le tendon d\'Achille'
+        ],
+        drill: 'Grip ankle lock × 20',
+        next: []
+      }
+    ],
+    drills: [
+      '⚡ Lifting sweep × 20',
+      '⚡ Rotation vers le dos depuis SLX × 15',
+      '⚡ Entrée SLX depuis debout × 20'
+    ]
+  },
+  {
+    id: 'demi_garde',
+    name: 'DEMI-GARDE',
+    sub: 'Half Guard',
+    icon: '½',
+    color: '#6366F1',
+    cat: 'GARDE',
+    obj: 'Ne pas rester plat — toujours sur le côté (underhook). Objectif : récupérer la garde complète ou prendre le dos via dogfight.',
+    flow: false,
+    techs: [
+      {
+        name: 'Dogfight → Back Take',
+        type: 'transition',
+        key: 'Underhook → monter → saisir ceinture → dos',
+        steps: [
+          'Obtenir le underhook (bras sous l\'aisselle adverse)',
+          'Monter sur le coude puis sur le genou',
+          'Arriver en position "chien de combat" (dogfight)',
+          'Faire pivoter l\'adversaire → passer dans son dos',
+          'Insérer les hooks → prise de dos'
+        ],
+        drill: 'Dogfight drill × 15 (chaque côté)',
+        next: ['back']
+      },
+      {
+        name: 'Old School Sweep',
+        type: 'sweep',
+        key: 'Attraper cheville adverse → tirer → rouler',
+        steps: [
+          'Depuis demi-garde : attraper la cheville adverse (celle bloquée)',
+          'Tirer la cheville vers soi',
+          'Rouler vers l\'arrière → adversaire perd l\'équilibre',
+          'Finir en mount ou en side control'
+        ],
+        drill: 'Old school movement × 15',
+        next: ['mount', 'side']
+      }
+    ],
+    drills: [
+      '⚡ Passage demi-garde → underhook × 20',
+      '⚡ Dogfight drill × 15'
+    ]
+  },
+  {
+    id: 'passage',
+    name: 'PASSAGE',
+    sub: 'Guard Passing',
+    icon: '→',
+    color: '#F97316',
+    cat: 'PASSAGE',
+    obj: 'Passer la garde et arriver en contrôle latéral. Priorité : garder la pression et le contrôle des hanches adverses. Ne jamais permettre à l\'adversaire de récupérer ses genoux entre nous.',
+    flow: true,
+    techs: [
+      {
+        name: 'Leg Drag',
+        type: 'transition',
+        key: 'Saisir pied + mollet → passer jambe → pression',
+        steps: [
+          'Saisir le pied (dessus) + le mollet adverse',
+          'Tirer la jambe vers soi et l\'amener par-dessus ma hanche',
+          'Passer mon corps de côté → poser les genoux au sol',
+          'Garder le contrôle de la jambe → pression latérale',
+          'Arriver en contrôle latéral, hanche collée'
+        ],
+        drill: 'Leg drag × 20 chaque côté',
+        next: ['side']
+      },
+      {
+        name: 'Knee Slice',
+        type: 'transition',
+        key: 'Main sur genou → genoux en diagonale → pression',
+        steps: [
+          'Poser la main sur le genou adverse (empêcher le cadre)',
+          'Amener mon genou en diagonale entre les jambes adverses',
+          'Pression vers le bas → "aplatir" l\'adversaire',
+          'Faire glisser le genou jusqu\'au sol',
+          'Arriver en contrôle latéral'
+        ],
+        drill: 'Knee slice × 20',
+        next: ['side']
+      },
+      {
+        name: 'Torreando',
+        type: 'transition',
+        key: 'Saisir 2 chevilles → pousser → pivoter de côté',
+        steps: [
+          'Saisir les deux chevilles (dessus)',
+          'Pousser les jambes vers le bas / le côté',
+          'Pivoter rapidement de côté (ne pas rester entre les jambes)',
+          'Poser les genoux → contrôle latéral',
+          'Garder un bras sur les hanches adverses pour éviter la récup'
+        ],
+        drill: 'Torreando × 20',
+        next: ['side']
+      }
+    ],
+    drills: [
+      '⚡ Leg drag × 20 chaque côté',
+      '⚡ Knee slice × 20',
+      '⚡ Passage complet (de garde ouverte → side control) × 10'
+    ]
+  },
+  {
+    id: 'side',
+    name: 'CONTRÔLE LATÉRAL',
+    sub: 'Side Control',
+    icon: '◀',
+    color: '#EF4444',
+    cat: 'CONTRÔLE',
+    obj: 'Maintenir la pression — ne jamais permettre à l\'adversaire de récupérer ses coudes ou ses genoux. De là : monter en mount, prendre le dos ou soumettre.',
+    flow: true,
+    techs: [
+      {
+        name: 'Americana (Clé de bras)',
+        type: 'submission',
+        key: 'Poignet → figure-L → rotation vers le haut',
+        steps: [
+          'Contrôler le bras proche : saisir le poignet',
+          'Avec l\'autre main : saisir au-dessus du coude',
+          'Amener le bras en figure-L (coude à 90°)',
+          'Pousser le coude vers le sol → poignet vers le haut',
+          'Pression progressive → tap quand ça tire l\'épaule'
+        ],
+        drill: 'Grip americana × 20',
+        next: []
+      },
+      {
+        name: 'Kimura (depuis side control)',
+        type: 'submission',
+        key: 'Poignet → figure-4 → rotation épaule',
+        steps: [
+          'Saisir le poignet adverse (bras proche)',
+          'Passer le bras par-dessus → figure-4',
+          'Monter pour dégager la hanche si nécessaire',
+          'Rotation : pousser vers l\'arrière + vers le haut',
+          'SI résiste → back take : l\'adversaire va rouler'
+        ],
+        drill: 'Kimura side control × 15',
+        next: ['back']
+      },
+      {
+        name: 'Arm Triangle (Étranglement)',
+        type: 'submission',
+        key: 'Bras adverse contre son cou → clavicule carotide',
+        steps: [
+          'Amener le bras adverse contre son propre cou',
+          'Poser ma clavicule / épaule contre sa carotide libre',
+          'Saisir mes mains → figure-4 sur ma propre tête',
+          'Passer du côté du bras bloqué (side mount de l\'autre côté)',
+          'Aplatir et pression → les deux carotides bloquées'
+        ],
+        drill: 'Setup arm triangle × 15',
+        next: []
+      },
+      {
+        name: '→ Mont',
+        type: 'transition',
+        key: 'Knee on belly → monter le genou',
+        steps: [
+          'Depuis side control : poser le genou sur le ventre (knee on belly)',
+          'Faire passer l\'adversaire de l\'autre côté si résiste',
+          'Amener le genou jusqu\'à la poitrine → monter en mount',
+          'Assurer l\'équilibre avant de s\'installer'
+        ],
+        drill: 'Side control → mount transition × 20',
+        next: ['mount']
+      },
+      {
+        name: '→ Prise de dos',
+        type: 'transition',
+        key: 'Si l\'adversaire se tourne → hooks directs',
+        steps: [
+          'Sentir l\'adversaire tourner pour s\'échapper',
+          'Suivre le mouvement → arriver dans son dos',
+          'Insérer le premier hook (jambe inférieure)',
+          'Insérer le deuxième hook',
+          'Chercher le RNC immédiatement'
+        ],
+        drill: 'Transition side → back × 15',
+        next: ['back']
+      }
+    ],
+    drills: [
+      '⚡ Side control → mount transition × 20',
+      '⚡ Maintien de pression (avec partenaire résistant) × 5 min',
+      '⚡ Side control → back × 15'
+    ]
+  },
+  {
+    id: 'mount',
+    name: 'MONT',
+    sub: 'Mount',
+    icon: '▲',
+    color: '#DC2626',
+    cat: 'CONTRÔLE',
+    obj: 'Rester haut sur le torse — ne jamais laisser l\'adversaire récupérer ses coudes. De mount : viser le S-mount pour l\'armbar haut ou prendre le dos si l\'adversaire se tourne.',
+    flow: true,
+    techs: [
+      {
+        name: 'Armbar depuis Mount',
+        type: 'submission',
+        key: 'Contrôle coude → pivoter → jambe tête → extension',
+        steps: [
+          'Contrôler le bras cible avec les deux mains (coude)',
+          'Pied du côté opposé passe à côté de la tête adverse',
+          'Pivoter rapidement en gardant le bras serré',
+          'S\'asseoir → genoux serrés autour du bras',
+          'Corps aligné avec le bras → étendre les hanches (pas tirer avec les bras)'
+        ],
+        drill: 'Armbar depuis mount × 15 chaque côté',
+        next: []
+      },
+      {
+        name: 'S-Mount → Armbar / RNC',
+        type: 'transition',
+        key: 'Avancer le genou → épaule bloquée → finir',
+        steps: [
+          'Depuis mount : avancer le genou vers l\'épaule adverse',
+          'Poser le genou sur l\'épaule → S-Mount établi',
+          'Contrôle total : l\'adversaire ne peut plus bouger',
+          'Option 1 : armbar haut (jambe par-dessus)',
+          'Option 2 : si se tourne → prendre le dos immédiatement'
+        ],
+        drill: 'S-mount → back take × 15',
+        next: ['back']
+      },
+      {
+        name: '→ Prise de dos (si défense mount)',
+        type: 'transition',
+        key: 'Si adversaire se tourne → suivre → hooks',
+        steps: [
+          'Sentir l\'adversaire tourner pour l\'escape mount',
+          'NE PAS résister → SUIVRE le mouvement',
+          'Arriver dans son dos pendant qu\'il est à mi-chemin',
+          'Insérer les hooks',
+          'Chercher RNC'
+        ],
+        drill: 'Mount defense → back take × 15',
+        next: ['back']
+      }
+    ],
+    drills: [
+      '⚡ Armbar depuis mount × 15 chaque côté',
+      '⚡ S-Mount → back take × 15',
+      '⚡ Maintien mount (avec résistance) × 5 min'
+    ]
+  },
+  {
+    id: 'back',
+    name: 'PRISE DE DOS',
+    sub: 'Back Control',
+    icon: '★',
+    color: '#FFB800',
+    cat: 'DOMINANT',
+    obj: 'Position la plus dominante. OBJECTIF : RNC. Ne jamais perdre ses hooks. Se maintenir collé, hooks bas (pas hauts sur les hanches).',
+    flow: true,
+    techs: [
+      {
+        name: 'RNC (Rear Naked Choke)',
+        type: 'submission',
+        key: 'Hook épaule → main derrière tête → serrer',
+        steps: [
+          'Bras fort passe sous le cou adverse',
+          'Coude s\'aligne sur le milieu du cou (pas sur la gorge)',
+          'Main libre se pose sur l\'épaule du bras fort (main derrière tête)',
+          'Serrer en "squeeze" — coude vers le bas, tête adverse poussée vers l\'avant',
+          'JAMAIS de bicep squeeze (trop lent) — always coude vers le bas'
+        ],
+        drill: 'Entrée RNC depuis back control × 30',
+        next: []
+      },
+      {
+        name: 'Bow and Arrow (Gi)',
+        type: 'submission',
+        key: 'Col + pantalon genou → tirer directions opposées',
+        steps: [
+          'Main forte saisit le col profond (côté qui étouffe)',
+          'Autre main saisit le pantalon au genou',
+          'Étendre la jambe du côté du col → body triangle ou hook',
+          'Tirer les deux mains dans des directions opposées',
+          'Extension du corps (arc) → étouffement'
+        ],
+        drill: 'Grip bow and arrow × 20',
+        next: []
+      },
+      {
+        name: 'Maintien dos — défense adverse',
+        type: 'defense',
+        key: 'Hooks bas · chin tuck · main sur le bras étrangleur',
+        steps: [
+          'Hooks TOUJOURS bas (creux du genou adverse, pas sur les hanches)',
+          'Si l\'adversaire sort un hook : tourner VERS ce côté',
+          'Chin tuck en permanence (protège l\'entrée du cou)',
+          'Si tente l\'étranglement : main sur le bras fort pour gagner du temps',
+          'Ne jamais se laisser "aller à plat" → garder l\'angle de côté'
+        ],
+        drill: 'Back retention drill (avec partenaire) × 5 min',
+        next: []
+      }
+    ],
+    drills: [
+      '⚡ Entrée RNC × 30',
+      '⚡ Back retention (avec partenaire) × 5 min',
+      '⚡ Hook insertion × 20 chaque côté'
+    ]
+  },
+  {
+    id: 'escape',
+    name: 'ESCAPES',
+    sub: 'Défense',
+    icon: '↩',
+    color: '#A855F7',
+    cat: 'DÉFENSE',
+    obj: 'Règle d\'or : ne pas rester allongé à plat. Toujours sur le côté, toujours récupérer un coude ou un genou. La défense mène à la garde, pas à une soumission directe.',
+    flow: false,
+    techs: [
+      {
+        name: 'Escape Side Control — Elbow-Knee',
+        type: 'defense',
+        key: 'Coude vers genou → dégager hanche → demi-garde',
+        steps: [
+          'Ne pas rester plat : tourner sur le côté',
+          'Ramener le coude proche vers le genou proche',
+          'Créer un espace → glisser la hanche vers l\'arrière',
+          'Faire rentrer le genou → demi-garde ou garde complète',
+          'Si bloqué : bridge & roll (pont + rotation)'
+        ],
+        drill: 'Elbow-knee escape × 20',
+        next: ['demi_garde', 'garde_fermee']
+      },
+      {
+        name: 'Escape Side Control — Bridge & Roll',
+        type: 'defense',
+        key: 'Piéger bras + jambe → pont → rotation',
+        steps: [
+          'Piéger le bras proche de l\'adversaire (bloquer à mon corps)',
+          'Piéger sa jambe proche avec ma jambe (hook)',
+          'Pont explosif (hanche vers le plafond)',
+          'Rotation vers lui → se retrouver en garde',
+          'Efficace si l\'adversaire est haut sur le torse'
+        ],
+        drill: 'Bridge & roll × 20',
+        next: ['garde_fermee']
+      },
+      {
+        name: 'Escape Mount — Trap & Roll (Upa)',
+        type: 'defense',
+        key: 'Piéger bras + pied → pont → roll',
+        steps: [
+          'Piéger le bras adverse (coller contre mon corps)',
+          'Piéger le pied du même côté (hook de pied)',
+          'Pont explosif vers le côté piegé',
+          'Rouler → se retrouver en garde',
+          'Timing important : attendre qu\'il soit haut'
+        ],
+        drill: 'Upa × 20',
+        next: ['garde_fermee']
+      },
+      {
+        name: 'Escape Mount — Elbow-Knee',
+        type: 'defense',
+        key: 'Coude → genou → glisser → demi-garde',
+        steps: [
+          'Planter les pieds au sol (ne pas les lever)',
+          'Coude vers le genou côté visé',
+          'Glisser la hanche vers ce côté',
+          'Rentrer le genou → demi-garde',
+          'Chercher le underhook immédiatement'
+        ],
+        drill: 'Mount elbow-knee × 20',
+        next: ['demi_garde']
+      },
+      {
+        name: 'Escape Back — Turn and Face',
+        type: 'defense',
+        key: 'Ne jamais tourner vers l\'étranglement',
+        steps: [
+          'Chin tuck immédiat (protéger le cou)',
+          'Identifier le côté où un hook est moins sécurisé',
+          'Glisser les hanches vers le bas (descendre)',
+          'Tourner VERS le côté du hook moins sécurisé',
+          'Face à face → récupérer la garde'
+        ],
+        drill: 'Back escape drill × 15',
+        next: ['garde_fermee']
+      }
+    ],
+    drills: [
+      '⚡ Elbow-knee escape × 20',
+      '⚡ Upa (bridge & roll) × 20',
+      '⚡ Hip escape (shrimping) × 2 aller-retour'
+    ]
+  },
+  {
+    id: 'turtle',
+    name: 'TURTLE',
+    sub: 'Position Tortue',
+    icon: '🐢',
+    color: '#64748B',
+    cat: 'DÉFENSE',
+    obj: 'Position de survie. Ne pas y rester — récupérer la garde ou se lever. Toujours anticiper l\'adversaire qui cherche le dos.',
+    flow: false,
+    techs: [
+      {
+        name: 'Granby Roll → Garde',
+        type: 'defense',
+        key: 'Rouler sur l\'épaule → récupérer la garde',
+        steps: [
+          'Depuis turtle : regarder sous l\'aisselle (côté de la rotation)',
+          'Rouler sur l\'épaule (shoulder roll)',
+          'Passer les jambes par-dessus',
+          'Atterrir en position de garde → établir les cadres',
+          'Drill : granby roll × 20 chaque côté'
+        ],
+        drill: 'Granby roll × 20 (chaque côté)',
+        next: ['garde_fermee', 'slx']
+      },
+      {
+        name: 'Sit-Out',
+        type: 'defense',
+        key: 'Pivoter sur la hanche → se retrouver dessus',
+        steps: [
+          'Depuis turtle : poser une main et un pied au sol',
+          'Pivoter sur la hanche (tourner en dessous)',
+          'S\'asseoir → se retrouver face à l\'adversaire ou dessus',
+          'Chercher le contrôle ou le passage'
+        ],
+        drill: 'Sit-out × 20',
+        next: ['side', 'passage']
+      }
+    ],
+    drills: [
+      '⚡ Granby roll × 20 chaque côté',
+      '⚡ Shoulder roll × 20',
+      '⚡ Sit-out × 20'
+    ]
+  }
+];
+
+// Flow order for the strip at the top
+const FLOW_ORDER = ['debout','garde_fermee','slx','passage','side','mount','back'];
+
+// ══════════════════════════════════════════
+// STATE & NAVIGATION
+// ══════════════════════════════════════════
+let currentPos = null;
+let openSections = {};
+let openTechs = {};
+
+function goHome() {
+  currentPos = null;
+  showView('home');
+  document.getElementById('backBtn').classList.remove('visible');
+  document.getElementById('headerSub').textContent = '10 positions · A-game Arnaud';
+  openSections = {};
+  openTechs = {};
+}
+
+function openPosition(id) {
+  currentPos = POSITIONS.find(p => p.id === id);
+  if (!currentPos) return;
+  openSections = {};
+  openTechs = {};
+  renderPositionDetail(currentPos);
+  showView('position');
+  document.getElementById('backBtn').classList.add('visible');
+  document.getElementById('headerSub').textContent = currentPos.name + ' — ' + currentPos.sub;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// RENDER HOME
+// ══════════════════════════════════════════
+function renderHome() {
+  // Flow strip
+  const flowInner = document.getElementById('flowInner');
+  FLOW_ORDER.forEach((id, i) => {
+    const pos = POSITIONS.find(p => p.id === id);
+    if (!pos) return;
+    const pill = document.createElement('div');
+    pill.className = 'flow-node';
+    pill.innerHTML = `
+      <div class="flow-pill" style="--c:${pos.color}; border-color:${pos.color}; color:${pos.color}; background:${pos.color}1A;" onclick="openPosition('${pos.id}')">
+        ${pos.icon} ${pos.name}
+      </div>
+      ${i < FLOW_ORDER.length - 1 ? '<div class="flow-arrow">→</div>' : ''}
+    `;
+    flowInner.appendChild(pill);
+  });
+
+  // Position grid
+  const grid = document.getElementById('posGrid');
+  POSITIONS.forEach(pos => {
+    const card = document.createElement('div');
+    card.className = 'pos-card';
+    card.style.setProperty('--c', pos.color);
+    card.onclick = () => openPosition(pos.id);
+    card.innerHTML = `
+      <div class="pos-card-icon" style="background:${pos.color}20; color:${pos.color}; font-size:20px;">${pos.icon}</div>
+      <div class="pos-card-name">${pos.name}</div>
+      <div class="pos-card-sub">${pos.sub}</div>
+      <div class="pos-card-footer">
+        <div class="pos-card-cat" style="background:${pos.color}1A; color:${pos.color};">${pos.cat}</div>
+        <div class="pos-card-count">${pos.techs.length} tech.</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+// RENDER POSITION DETAIL
+// ══════════════════════════════════════════
+function renderPositionDetail(pos) {
+  const detail = document.getElementById('posDetail');
+  detail.style.setProperty('--pc', pos.color);
+
+  const typeGroups = {
+    submission: { label: 'SOUMISSIONS', techs: [] },
+    sweep:      { label: 'SWEEPS',      techs: [] },
+    takedown:   { label: 'TAKEDOWNS',   techs: [] },
+    transition: { label: 'TRANSITIONS', techs: [] },
+    defense:    { label: 'DÉFENSE',     techs: [] },
+  };
+
+  pos.techs.forEach(t => {
+    if (typeGroups[t.type]) typeGroups[t.type].techs.push(t);
+    else typeGroups.transition.techs.push(t);
+  });
+
+  let sectionsHTML = '';
+  Object.entries(typeGroups).forEach(([type, g]) => {
+    if (!g.techs.length) return;
+    const sId = pos.id + '_' + type;
+    sectionsHTML += `
+      <div class="tech-section">
+        <div class="tech-section-header" onclick="toggleSection('${sId}')">
+          <div class="tech-section-title">
+            <div class="dot"></div>${g.label}
+          </div>
+          <div class="tech-section-count">${g.techs.length}</div>
+        </div>
+        <div class="tech-section-body" id="sec-${sId}">
+          ${g.techs.map(t => renderTechCard(pos, t)).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  // Drills section
+  const drillsHTML = pos.drills.map(d => `<li><span class="drill-icon">⚡</span>${d.replace('⚡ ','')}</li>`).join('');
+
+  detail.innerHTML = `
+    <div class="pos-hero">
+      <div class="pos-hero-cat">${pos.cat}</div>
+      <div class="pos-hero-name">${pos.name}</div>
+      <div class="pos-hero-sub">${pos.sub}</div>
+      <div class="pos-hero-obj">${pos.obj}</div>
+    </div>
+    ${sectionsHTML}
+    <div class="tech-section">
+      <div class="tech-section-header" onclick="toggleSection('${pos.id}_drills')">
+        <div class="tech-section-title">
+          <div class="dot"></div>DRILLS QUOTIDIENS
+        </div>
+        <div class="tech-section-count">${pos.drills.length}</div>
+      </div>
+      <div class="tech-section-body" id="sec-${pos.id}_drills">
+        <ul class="drills-list">${drillsHTML}</ul>
+      </div>
+    </div>
+    <div style="padding:20px 20px 0;">
+      <div class="rule-box">
+        <strong>Règle en sparring :</strong> je cherche mon A-game depuis ${pos.name}, même si je perds la position. C'est comme ça qu'on câble les techniques.
+      </div>
+    </div>
+  `;
+}
+
+function renderTechCard(pos, tech) {
+  const tId = pos.id + '_' + tech.name.replace(/\s+/g,'_');
+  const typeClass = 'type-' + (tech.type === 'transition' ? 'transition' : tech.type === 'submission' ? 'submission' : tech.type === 'sweep' ? 'sweep' : tech.type === 'takedown' ? 'takedown' : tech.type === 'defense' ? 'defense' : 'transition');
+  const typeLabel = tech.type === 'submission' ? 'SOUMISSION' : tech.type === 'sweep' ? 'SWEEP' : tech.type === 'takedown' ? 'TAKEDOWN' : tech.type === 'transition' ? 'TRANSITION' : 'DÉFENSE';
+
+  const stepsHTML = tech.steps.map((s, i) => `
+    <li><div class="step-num">${i+1}</div><span>${s}</span></li>
+  `).join('');
+
+  const nextHTML = tech.next && tech.next.length ? `
+    <div class="next-label">TRANSITIONS VERS</div>
+    <div class="next-chips">
+      ${tech.next.map(id => {
+        const p = POSITIONS.find(p => p.id === id);
+        return p ? `<div class="next-chip" style="--pc:${p.color}" onclick="event.stopPropagation(); openPosition('${p.id}')">${p.icon} ${p.name}</div>` : '';
+      }).join('')}
+    </div>
+  ` : '';
+
+  return `
+    <div class="tech-card" id="tech-${tId}" onclick="toggleTech('${tId}')">
+      <div class="tech-card-header">
+        <div>
+          <div class="tech-card-name">${tech.name}</div>
+          <div class="tech-card-key">${tech.key}</div>
+        </div>
+        <div class="tech-card-type ${typeClass}">${typeLabel}</div>
+      </div>
+      <div class="tech-card-body" id="tbody-${tId}">
+        <ol class="steps-list">${stepsHTML}</ol>
+        <div class="drill-box">
+          <span class="drill-label">DRILL</span>
+          <span class="drill-text">${tech.drill}</span>
+        </div>
+        ${nextHTML}
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════════
+function toggleSection(sId) {
+  const body = document.getElementById('sec-' + sId);
+  if (!body) return;
+  openSections[sId] = !openSections[sId];
+  body.classList.toggle('open', openSections[sId]);
+}
+
+function toggleTech(tId) {
+  const body = document.getElementById('tbody-' + tId);
+  const card = document.getElementById('tech-' + tId);
+  if (!body || !card) return;
+  openTechs[tId] = !openTechs[tId];
+  body.classList.toggle('open', openTechs[tId]);
+  card.classList.toggle('expanded', openTechs[tId]);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderHome();
+</script>
+</body>
+</html>
