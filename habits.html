@@ -374,27 +374,39 @@ const HABITS = [
 
 /* ─── DEEN ITEMS ─── */
 const DEEN = [
-  { id:'adhkars',        name:'ADHKĀRS MATIN & SOIR',    desc:'Sayyid al-Istighfār · Protection · 4 invocations', max:2, labels:['MATIN','SOIR'],                                    xp:100, group:1, key:'adhkars' },
-  { id:'ayat_kursi',     name:'ĀYAT AL-KURSĪ',           desc:'Verset du Trône — matin et soir',                  max:2, labels:['MATIN','SOIR'],                                    xp:40,  group:1, key:'ayat' },
-  { id:'sourates_prot',  name:'PROTECTION 3 SOURATES',   desc:'Al-Ikhlāṣ · Al-Falaq · An-Nās (×3)',              max:1, labels:['FAIT'],                                             xp:100, group:1, key:'sourates' },
-  { id:'dhikr_rapide',   name:'DHIKR RAPIDE',            desc:'Dhikr libre du cœur · matin et soir',             max:2, labels:['MATIN','SOIR'],                                    xp:15,  group:1, key:'dhikr' },
-  { id:'dhikr_salah',    name:'DHIKR POST-ṢALĀH',       desc:'Tasbīḥ 33× · Āyat al-Kursī — après chaque prière',max:5, labels:['FAJR','DHUHR','ʿAṢR','MAGHRIB','ʿISHĀʾ'],        xp:30,  group:1, key:'dhikr_salah' },
-  { id:'ilm',            name:'ILM — APPRENTISSAGE',     desc:'Cours · conférence · lecture islamique 10min',     max:1, labels:['FAIT'],                                             xp:60,  group:1, key:null },
-  { id:'mosquee',        name:'MOSQUÉE — JAMĀCA',        desc:'Prière en congrégation · ×27 la récompense',      max:1, labels:['FAIT'],                                             xp:80,  group:2, key:'mosquee' },
-  { id:'sadaqa',         name:'ṢADAQA DU JOUR',         desc:'Aumône · même symbolique · protège des épreuves', max:1, labels:['FAIT'],                                             xp:60,  group:2, key:'sadaqa' },
-  { id:'tahajjud',       name:'TAHAJJUD',                desc:'Prière de nuit — dernier tiers de la nuit',       max:1, labels:['FAIT'],                                             xp:150, group:2, key:'tahajjud' },
-  { id:'tawbah',         name:'TAWBAH — REPENTIR',       desc:'Istighfār sincère du jour · 3 minutes minimum',   max:1, labels:['FAIT'],                                             xp:50,  group:2, key:'tawbah' },
+  { id:'adhkars',        name:'ADHKĀRS MATIN & SOIR',    desc:'Sayyid al-Istighfār · Protection · 4 invocations', max:2, labels:['MATIN','SOIR'],                                    xp:120, group:1, key:'adhkars' },
+  { id:'ayat_kursi',     name:'ĀYAT AL-KURSĪ',           desc:'Verset du Trône — matin et soir',                  max:2, labels:['MATIN','SOIR'],                                    xp:50,  group:1, key:'ayat' },
+  { id:'sourates_prot',  name:'PROTECTION 3 SOURATES',   desc:'Al-Ikhlāṣ · Al-Falaq · An-Nās (×3)',              max:1, labels:['FAIT'],                                             xp:110, group:1, key:'sourates' },
+  { id:'dhikr_rapide',   name:'DHIKR RAPIDE',            desc:'Dhikr libre du cœur · matin et soir',             max:2, labels:['MATIN','SOIR'],                                    xp:25,  group:1, key:'dhikr' },
+  { id:'dhikr_salah',    name:'DHIKR POST-ṢALĀH',       desc:'Tasbīḥ 33× · Āyat al-Kursī — après chaque prière',max:5, labels:['FAJR','DHUHR','ʿAṢR','MAGHRIB','ʿISHĀʾ'],        xp:40,  group:1, key:'dhikr_salah' },
+  { id:'ilm',            name:'ILM — APPRENTISSAGE',     desc:'Cours · conférence · lecture islamique 10min',     max:1, labels:['FAIT'],                                             xp:75,  group:1, key:null },
+  { id:'mosquee',        name:'MOSQUÉE — JAMĀCA',        desc:'Prière en congrégation · ×27 la récompense',      max:1, labels:['FAIT'],                                             xp:100, group:2, key:'mosquee' },
+  { id:'sadaqa',         name:'ṢADAQA DU JOUR',         desc:'Aumône · même symbolique · protège des épreuves', max:1, labels:['FAIT'],                                             xp:75,  group:2, key:'sadaqa' },
+  { id:'tahajjud',       name:'TAHAJJUD',                desc:'Prière de nuit — dernier tiers de la nuit',       max:1, labels:['FAIT'],                                             xp:180, group:2, key:'tahajjud' },
+  { id:'tawbah',         name:'TAWBAH — REPENTIR',       desc:'Istighfār sincère du jour · 3 minutes minimum',   max:1, labels:['FAIT'],                                             xp:65,  group:2, key:'tawbah' },
 ];
 
 /* ─── RAWATIB ─── */
-// XP calibrés vs le reste : sunnah mu'akkada, moins que tahajjud (150 XP) mais significatives
-// Total max rawatib : 140 XP
+// Couverture complète des prières surérogatoires autour des 5 prières obligatoires
+// Ordre : Fajr → Dhuhr → ʿAṣr → Maghrib → ʿIshāʾ → Nawāfil
+// Total max rawatib : 370 XP
 const RAWATIB = [
-  { id:'raw_fajr',      name:'SUNNAH AL-FAJR',          desc:'2 rak\'ahs avant Fajr — jamais abandonnées par le Prophète ﷺ',  xp:45 },
-  { id:'raw_dhuhr_qab', name:'SUNNAH DHUHR QABLIYYA',   desc:'4 rak\'ahs avant Dhuhr',                                         xp:30 },
-  { id:'raw_dhuhr_bad', name:'SUNNAH DHUHR BAʿDIYYA',   desc:'2 rak\'ahs après Dhuhr',                                         xp:20 },
-  { id:'raw_maghrib',   name:'SUNNAH MAGHRIB',           desc:'2 rak\'ahs après Maghrib',                                       xp:25 },
-  { id:'raw_isha',      name:'SUNNAH ʿISHĀʾ',           desc:'2 rak\'ahs après ʿIshāʾ',                                       xp:20 },
+  // ── FAJR ──
+  { id:'raw_fajr',        name:'SUNNAH AL-FAJR',          desc:'2 rak\'ahs avant Fajr — jamais abandonnées par le Prophète ﷺ',           xp:50 },
+  // ── DHUHR ──
+  { id:'raw_dhuhr_qab',   name:'SUNNAH DHUHR QABLIYYA',   desc:'4 rak\'ahs avant Dhuhr — sunnah mu\'akkada',                              xp:35 },
+  { id:'raw_dhuhr_bad',   name:'SUNNAH DHUHR BAʿDIYYA',   desc:'2 rak\'ahs après Dhuhr — sunnah mu\'akkada',                              xp:25 },
+  // ── ʿAṢR ──
+  { id:'raw_asr',         name:'SUNNAH ʿAṢR',             desc:'4 rak\'ahs avant ʿAṣr — "Qu\'Allah ait pitié de celui qui les prie" ﷺ',   xp:25 },
+  // ── MAGHRIB ──
+  { id:'raw_maghrib_qab', name:'SUNNAH MAGHRIB QABLIYYA', desc:'2 rak\'ahs avant Maghrib — "Priez avant Maghrib" (Bukhārī)',               xp:20 },
+  { id:'raw_maghrib_bad', name:'SUNNAH MAGHRIB BAʿDIYYA', desc:'2 rak\'ahs après Maghrib — sunnah mu\'akkada',                            xp:30 },
+  { id:'raw_awwabeen',    name:'ṢALĀT AL-AWWĀBĪN',       desc:'6 rak\'ahs après Maghrib — récompense de 12 ans d\'adoration (Tirmidhī)', xp:40 },
+  // ── ʿISHĀʾ ──
+  { id:'raw_isha',        name:'SUNNAH ʿISHĀʾ BAʿDIYYA', desc:'2 rak\'ahs après ʿIshāʾ — sunnah mu\'akkada',                            xp:25 },
+  { id:'raw_witr',        name:'WITR',                    desc:'1 ou 3 rak\'ahs — sceau de la nuit, avant le sommeil',                    xp:70 },
+  // ── NAWĀFIL ──
+  { id:'raw_duha',        name:'ṢALĀT AḌ-ḌUḤĀ',         desc:'2 à 8 rak\'ahs · après lever du soleil (15-20 min)',                     xp:50 },
 ];
 
 /* ─── CAROUSEL DATA ─── */
