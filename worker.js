@@ -76,7 +76,7 @@ Reply with ONLY this JSON, no other text, no markdown:
     // ─── ROUTE / → GitHub centralisé ────────────────────────────────────────
     try {
       const body = await request.json();
-      const { content, date, section } = body;
+      const { content, date, section, filename } = body;
 
       if (!date || !section || !content) return new Response(
         JSON.stringify({ error: 'date, section et content sont requis' }),
@@ -84,6 +84,11 @@ Reply with ONLY this JSON, no other text, no markdown:
       );
 
       await upsertSection(env.GITHUB_TOKEN, DAILY_PATH(date), date, section, content);
+
+      // Si un fichier cible différent du DAILY est spécifié, y appender aussi
+      if (filename && filename !== DAILY_PATH(date)) {
+        await appendToFile(env.GITHUB_TOKEN, filename, content);
+      }
 
       return new Response(JSON.stringify({ success: true, file: DAILY_PATH(date) }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -153,20 +158,8 @@ function insertInOrder(text, block, section) {
 async function upsertSection(token, path, date, section, sectionContent) {
   const { start, end } = markers(section);
 
-  // TIME_FOCUS : additive (cumul des minutes de la journée)
+  // TIME_FOCUS : remplacement (l'app envoie l'état total, pas un delta)
   let finalContent = sectionContent;
-  if (section === 'TIME_FOCUS') {
-    const file = await ghGet(token, path);
-    if (file && file.text.includes(start)) {
-      const existing = extractSection(file.text, start, end);
-      const merged   = mergeTimes(existing, sectionContent);
-      finalContent   = buildTimeFocusContent(date, merged);
-      const block    = `${start}\n${finalContent.trim()}\n${end}`;
-      const newText  = file.text.replace(new RegExp(escRe(start) + '[\\s\\S]*?' + escRe(end)), block);
-      await ghPut(token, path, newText, file.sha, `time: ${date}`);
-      return;
-    }
-  }
 
   const file  = await ghGet(token, path);
   const block = `${start}\n${finalContent.trim()}\n${end}`;
@@ -184,38 +177,11 @@ async function upsertSection(token, path, date, section, sectionContent) {
   await ghPut(token, path, newText, file?.sha, msg);
 }
 
-/* ── Time Focus helpers ─────────────────────────────────────────────────── */
 
-function extractSection(text, start, end) {
-  const re    = new RegExp(escRe(start) + '([\\s\\S]*?)' + escRe(end));
-  const match = text.match(re);
-  return match ? match[1].trim() : '';
-}
+/* ── Append to arbitrary file (e.g. OUTDOOR_LOG.md) ────────────────────── */
 
-function parseTimeFocus(text) {
-  const result = {};
-  for (const line of (text || '').split('\n')) {
-    const m = line.match(/^([^:]+)::\s*(\d+)/);
-    if (m) { const mins = parseInt(m[2]); if (mins > 0) result[m[1].trim()] = mins; }
-  }
-  return result;
-}
-
-function mergeTimes(existingText, incomingText) {
-  const existing = parseTimeFocus(existingText);
-  const incoming = parseTimeFocus(incomingText);
-  const merged   = { ...existing };
-  for (const [cat, mins] of Object.entries(incoming)) merged[cat] = (merged[cat] || 0) + mins;
-  return merged;
-}
-
-const CATS = ['CORAN','ARABIC','BJJ','PODCAST','DEV','MASJID','ISLAMIC FINANCE','BOOK','FINANCE','ISLAM','ANGLAIS','GYM'];
-
-function buildTimeFocusContent(date, times) {
-  const total   = Object.values(times).reduce((a, b) => a + b, 0);
-  const fmtMins = m => m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? m % 60 + 'm' : ''}`;
-  let c  = `## TIME FOCUS — ${date}\n\n`;
-  c     += `**Total : ${fmtMins(total)}**\n\n`;
-  for (const cat of CATS) c += `${cat}:: ${times[cat] || 0}\n`;
-  return c;
+async function appendToFile(token, path, content) {
+  const existing = await ghGet(token, path);
+  const newText  = existing ? (existing.text.trimEnd() + '\n' + content) : content;
+  await ghPut(token, path, newText, existing?.sha, `outdoor: append`);
 }
