@@ -236,9 +236,9 @@ const CIRC = 2 * Math.PI * R;
 let selectedMins = 30;
 let selectedCat = null;
 let todayLog = {};
-let sessions = {};
 let lastEntry = null;
-let pending = false;
+let pushBusy = false;
+let pushQueued = false;
 
 function getDate() {
   const d = new Date();
@@ -250,14 +250,12 @@ function loadToday() {
   if (d) {
     const p = JSON.parse(d);
     todayLog = p.log || {};
-    sessions = p.ses || {};
     Object.keys(todayLog).forEach(k => todayLog[k] = parseInt(todayLog[k]) || 0);
-    Object.keys(sessions).forEach(k => sessions[k] = parseInt(sessions[k]) || 0);
   }
 }
 
 function saveToday() {
-  localStorage.setItem(`tl_${getDate()}`, JSON.stringify({ log: todayLog, ses: sessions }));
+  localStorage.setItem(`tl_${getDate()}`, JSON.stringify({ log: todayLog }));
 }
 
 function fmtMins(m) {
@@ -389,7 +387,6 @@ function updateTotal() {
 
 function prepareLog() {
   if (!selectedCat || !selectedMins) return;
-  pending = true;
   document.getElementById('validateBtn').style.display = 'none';
   document.getElementById('confirmBtn').textContent = `+${selectedMins}min · ${selectedCat}`;
   document.getElementById('confirmRow').classList.add('show');
@@ -397,7 +394,6 @@ function prepareLog() {
 }
 
 function cancelLog() {
-  pending = false;
   document.getElementById('validateBtn').style.display = '';
   document.getElementById('confirmRow').classList.remove('show');
   if (lastEntry) document.getElementById('undoBtn').classList.add('show');
@@ -410,11 +406,9 @@ function logTime() {
   btn.disabled = true;
   lastEntry = { cat: selectedCat, mins: selectedMins };
   todayLog[selectedCat] = (parseInt(todayLog[selectedCat]) || 0) + selectedMins;
-  sessions[selectedCat] = (sessions[selectedCat] || 0) + 1;
   saveToday();
   pushToObsidian();
-  showToast(`✓ +${selectedMins}min ${selectedCat}`);
-  pending = false;
+  showToast(`+${selectedMins}min ${selectedCat}`);
   document.getElementById('validateBtn').style.display = '';
   document.getElementById('confirmRow').classList.remove('show');
   document.getElementById('undoBtn').classList.add('show');
@@ -427,28 +421,59 @@ function undoLast() {
   if (!lastEntry) return;
   todayLog[lastEntry.cat] = Math.max(0, (todayLog[lastEntry.cat] || 0) - lastEntry.mins);
   if (todayLog[lastEntry.cat] === 0) delete todayLog[lastEntry.cat];
-  sessions[lastEntry.cat] = Math.max(0, (sessions[lastEntry.cat] || 1) - 1);
   saveToday();
   pushToObsidian();
-  showToast(`↩ -${lastEntry.mins}min ${lastEntry.cat} annulé`);
+  showToast(`↩ -${lastEntry.mins}min ${lastEntry.cat}`);
   lastEntry = null;
   document.getElementById('undoBtn').classList.remove('show');
   updateTotal();
   renderCats();
 }
 
+function setSyncStatus(status) {
+  const dot = document.querySelector('.dot');
+  if (status === 'ok')      dot.style.background = 'var(--green)';
+  else if (status === 'pending') dot.style.background = 'var(--amber)';
+  else                      dot.style.background = '#ff4444';
+}
+
 async function pushToObsidian() {
+  if (pushBusy) { pushQueued = true; return; }
+  pushBusy = true;
+  setSyncStatus('pending');
+
   const date = getDate();
   let content = `## TIME FOCUS\n\n`;
   CATS.forEach(cat => { content += `${cat}:: ${todayLog[cat] || 0}\n`; });
-  try {
-    await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, date, section: 'TIME_FOCUS' })
-    });
-  } catch(e) {}
+  const body = JSON.stringify({ content, date, section: 'TIME_FOCUS' });
+
+  let success = false;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const r = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      if (r.ok) { success = true; break; }
+    } catch(e) {}
+    if (i < 2) await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+  }
+
+  setSyncStatus(success ? 'ok' : 'error');
+  if (!success) showToast('Sync echoue - reessai au prochain ajout');
+  pushBusy = false;
+
+  if (pushQueued) {
+    pushQueued = false;
+    pushToObsidian();
+  }
 }
+
+// Push quand l'app passe en arriere-plan
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && Object.keys(todayLog).length > 0) pushToObsidian();
+});
 
 function showToast(msg) {
   const t = document.getElementById('toast');
